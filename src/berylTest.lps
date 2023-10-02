@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="berylTest.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="34" Y="13"/>
+        <UsageCount Value="238"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="beryl.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <TopLine Value="59"/>
+        <CursorPos X="3" Y="80"/>
+        <UsageCount Value="238"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="berylengine.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="berylEngine"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="658"/>
+        <CursorPos X="12" Y="681"/>
+        <FoldState Value=" T3t40J02146125 pmd+Q0mt"/>
+        <UsageCount Value="238"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="libs.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Libs"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="41" Y="10"/>
+        <UsageCount Value="109"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="/usr/lib/lazarus/components/lazutils/lazstringutils.pas"/>
+        <UnitName Value="LazStringUtils"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="230"/>
+        <CursorPos Y="246"/>
+        <UsageCount Value="10"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="738" Column="34" TopLine="707"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="918" Column="40" TopLine="888"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="171" Column="17" TopLine="141"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="172" Column="32" TopLine="169"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="176" Column="21" TopLine="160"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="209" Column="30" TopLine="192"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="210" Column="25" TopLine="198"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="643" Column="40" TopLine="576"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="195" Column="10" TopLine="186"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="189" Column="10" TopLine="184"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="307" Column="21" TopLine="298"/>
+      </Position>
+      <Position>
+        <Filename Value="beryl.pas"/>
+        <Caret Line="80" Column="3" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="563" Column="67" TopLine="540"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="564" Column="3" TopLine="540"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="548" Column="19" TopLine="540"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="565" Column="3" TopLine="540"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="561" Column="36" TopLine="540"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="569" Column="3" TopLine="542"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="568" Column="33" TopLine="542"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="988" Column="103" TopLine="958"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="573" Column="25" TopLine="555"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="607" Column="68" TopLine="605"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="608" Column="37" TopLine="603"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="629" Column="34" TopLine="603"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="642" Column="24" TopLine="593"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="603" Column="45" TopLine="583"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="485" Column="71" TopLine="468"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="587" Column="56" TopLine="586"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="597" Column="30" TopLine="580"/>
+      </Position>
+      <Position>
+        <Filename Value="berylengine.pas"/>
+        <Caret Line="680" Column="66" TopLine="663"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+  <Debugging>
+    <Watches>
+      <Item>
+        <Expression Value="doStateTask"/>
+      </Item>
+    </Watches>
+  </Debugging>
+</CONFIG>

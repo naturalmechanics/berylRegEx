@@ -1,0 +1,59 @@
+object Form1: TForm1
+  Left = 0
+  Height = 855
+  Top = 197
+  Width = 1443
+  Caption = 'Form1'
+  ClientHeight = 855
+  ClientWidth = 1443
+  OnCreate = FormCreate
+  LCLVersion = '2.2.6.0'
+  object testInput: TMemo
+    Left = 8
+    Height = 296
+    Top = 8
+    Width = 928
+    TabOrder = 0
+  end
+  object regExInput: TMemo
+    Left = 8
+    Height = 296
+    Top = 312
+    Width = 928
+    TabOrder = 1
+  end
+  object Analysis: TMemo
+    Left = 944
+    Height = 759
+    Top = 8
+    Width = 498
+    ScrollBars = ssAutoBoth
+    TabOrder = 2
+    WordWrap = False
+  end
+  object btnRUN: TButton
+    Left = 8
+    Height = 33
+    Top = 616
+    Width = 96
+    Caption = 'RUN regEx'
+    OnClick = btnRUNClick
+    TabOrder = 3
+  end
+  object btnSHW: TButton
+    Left = 824
+    Height = 33
+    Top = 616
+    Width = 112
+    Caption = 'Show Analysis'
+    TabOrder = 4
+  end
+  object btnCLR: TButton
+    Left = 824
+    Height = 33
+    Top = 656
+    Width = 112
+    Caption = 'Clear Analysis'
+    TabOrder = 5
+  end
+end
