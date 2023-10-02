@@ -71,7 +71,7 @@
 
       \;
 
-      <space|7em>q : F(\Pb\Q);
+      <space|7em>#q : F(\Pb\Q);
 
       \ 
 
@@ -83,15 +83,17 @@
 
       <space|5.5em>\|\|;;\ 
 
-      3 : ER { #l 2 #m } {OFFSET 4; RANGE 20;} : {
+      3 : ER {} {OFFSET 4; RANGE 20;} : {
+
+      <space|5em>{{ REPEAT 2 }} {{
 
       <space|5em>1 : EQ {IGNORE CASE} : BAZ ;;
 
-      <space|4em>};;
+      <space|5em>}}
+
+      <space|4em>} : \|\| \|\|;;
     </verse>>>
   </with>>
-
-  \;
 
   <subsection|Important Concepts>
 
@@ -109,15 +111,15 @@
 
   Sometimes, it might be the case, that the Search String was not specified
   exactly. We might want to search for <with|color|blue|F*o<with|font-family|tt|>>,
-  where the asterisk is an wildcard for any character possible. In the Test
-  String, we find that the character <with|color|blue|o<with|font-family|tt|>>
-  fits the wildcard. In this example, <with|color|blue|F*o<with|font-family|tt|>>
-  will play the role of the Search string. But it is not exactly defined.
-  This will be called a <with|color|blue|<with|font-series|bold|<with|color|dark
-  green|Pattern>>>, and the substring that matches the Search String with
-  wildcard, namely <with|color|blue|Foo<with|font-family|tt|>>, will be
-  referred to as <with|color|blue|<with|font-series|bold|<with|color|dark
-  green|Match>>>.
+  where the asterisk is an wildcard for any character (or multiple
+  characters) possible. In the Test String, we find that the character
+  <with|color|blue|o<with|font-family|tt|>> fits the wildcard. In this
+  example, <with|color|blue|F*o<with|font-family|tt|>> does play the role of
+  the Search string, but it is not exactly defined as a Search String. This
+  will be called a <with|color|blue|<with|font-series|bold|<with|color|dark
+  green|Pattern>>>. The substring that matches the pattern, namely
+  <with|color|blue|Foo<with|font-family|tt|>>, will be referred to as
+  <with|color|blue|<with|font-series|bold|<with|color|dark green|Match>>>.
 
   \;
 
@@ -127,16 +129,16 @@
 
   <subsection|Structure of a Beryl regEx instruction>
 
-  Each Beryl instruction has 4 segment. They are:
+  Each Beryl instruction has 4 segments. These are:
 
   \;
 
   <\enumerate-numeric>
     <item>Reference
 
-    <item>Match Type, Type control, and Generic control information
+    <item>Match Type, Type Control, and Generic Control information
 
-    <item>Search string or pattern, with default information extraction
+    <item>Search String or Pattern, with default information extraction
     instructions
 
     <item>Additional code
@@ -149,7 +151,7 @@
   Each segment of a Beryl regEx instruction is separated from its neighbors
   with <with|color|blue|:>, a colon. Every complete Beryl regEx instruction
   ends with <with|color|blue|;;>, double semicolon. Inside the 4th segment,
-  the additional code, each line of code may end with <with|color|blue|;>, a
+  the additional code, each line of code must end with <with|color|blue|;>, a
   single semicolon.\ 
 
   \;
@@ -428,7 +430,7 @@
 
         <space|7em>\<backslash\>
 
-        <space|8em>1 : EX {} {FENCE 2; } : Bar : \|\| {} \|\|;;\ 
+        <space|8em>1 : EX {} {FENCE 2; } : Baz : \|\| {} \|\|;;\ 
 
         <space|7em>\<backslash\>
 
@@ -467,7 +469,7 @@
 
         <space|7em>\<backslash\>
 
-        <space|8em>1 : EX {} {FENCE 2; RETREAT 4;} : Bar : \|\| {} \|\|;;\ 
+        <space|8em>1 : EX {} {FENCE 2; RETREAT 4;} : Baz : \|\| {} \|\|;;\ 
 
         <space|7em>\<backslash\>
 
@@ -4491,9 +4493,9 @@
     <associate|auto-112|<tuple|10.1|57>>
     <associate|auto-113|<tuple|10.1.1|57>>
     <associate|auto-114|<tuple|10.1.2|58>>
-    <associate|auto-115|<tuple|10.1.3|?>>
-    <associate|auto-116|<tuple|10.1.4|?>>
-    <associate|auto-117|<tuple|10.2|?>>
+    <associate|auto-115|<tuple|10.1.3|58>>
+    <associate|auto-116|<tuple|10.1.4|58>>
+    <associate|auto-117|<tuple|10.2|59>>
     <associate|auto-12|<tuple|1.2.2.3|8>>
     <associate|auto-13|<tuple|1.2.2.3.1|8>>
     <associate|auto-14|<tuple|1.2.2.3.2|8>>
@@ -5037,6 +5039,17 @@
       <with|par-left|<quote|1tab>|10.1.2.<space|2spc>Empty instructions
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-114>>
+
+      <with|par-left|<quote|1tab>|10.1.3.<space|2spc>General Syntax
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-115>>
+
+      <with|par-left|<quote|1tab>|10.1.4.<space|2spc>Accessign Variables
+      after regExHandler is executed <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-116>>
+
+      10.2.<space|2spc>Scripts <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-117>
     </associate>
   </collection>
 </auxiliary>
