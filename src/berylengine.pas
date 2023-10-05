@@ -5,7 +5,7 @@ unit berylEngine;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Character, Variants, Libs;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Character, Variants, Libs,Generics.Collections, Generics.Defaults;
 
 
 type
@@ -67,7 +67,7 @@ type
     chldComb        : regEx_multiModes;
 
     ID              : Integer;
-
+    result          : String;
 
   end;
 
@@ -80,6 +80,8 @@ type
            v  //------------------------------------------------------------------// Variant = everything
            );
 
+  TRegExVal = ^regExVal;
+
   regExVal = packed record
     vtp              : varTypes;
     b                : Boolean;
@@ -87,6 +89,15 @@ type
     i                : Integer;
     s                : String;
     v                : Variant;
+
+    isar             : Boolean;
+
+
+    ba               : Array of Boolean;
+    fa               : Array of Double;
+    ia               : Array of Integer;
+    sa               : Array of String;
+    va               : Array of Variant;
 
     name             : String;
 
@@ -97,7 +108,7 @@ type
   regExNameSpace = class
     public
 
-    vals             : Array of regExVal;
+    vals             : Array of TRegExVal;
     name             : String;
 
     constructor Create(n:String) ;
@@ -109,13 +120,23 @@ type
     procedure setV(n: String; val: regExVal);
   end;
 
+  regExResult = packed record
+    status           : Boolean;
+    ID               : Integer;
+    match            : String;
+  end;
+
   { regExHandler }
 
   regExHandler = class
 
     public
 
-    fullCommand      : String;
+    fullCommand      : String;  //------------------------------------------------// this is the current command being handled by the engine
+                                                                                  // each TregExInstruction has their own rawcode, but when the
+                                                                                  // handler works on a node (recall that TregExInstructions are
+                                                                                  // in a linked list tree parent <--> child and prevSibling <--> nextSibling)
+                                                                                  // then the rawcode is moved to fullCommand
     fullcommandStack : Array of String;
 
 
@@ -138,12 +159,18 @@ type
 
     testString       : String;
 
+
     constructor Create();
     procedure reset();
     procedure preprocessCode(code: Array of String);
 
     procedure makeTree_ofInstructions();
+    procedure associateDefaultNameSpace(nm : String; ns: regExNameSpace);
+    procedure addNameSpace(nm : String; ns: regExNameSpace);
     procedure parseTree();
+
+    function getResult(id: Integer) : regExResult;
+    function getResult(id: Array of Integer) : regExResult;
 
 
     procedure recognizeAtoms();
@@ -176,10 +203,20 @@ type
     target           : String;
     modifiedTarget   : String;
 
-    match           : String;
-    location        : Integer;
-    count           : Integer;
-    condition       : Array of Boolean;
+    match            : String;
+    location         : Integer;
+    count            : Integer;
+    condition        : Array of Boolean;
+
+    matchName        : String;
+    locationName     : String;
+    countName        : String;
+    conditionName    : String;
+
+    hasMatch         : Boolean;
+    hasLocation      : Boolean;
+    hasCount         : Boolean;
+    hasCondition     : Boolean;
 
     status          : Boolean;
 
@@ -226,7 +263,7 @@ implementation
 
 { instructionParser }
 
-constructor instructionParser.create (ins : TRegExInstruction);
+constructor instructionParser.create (ins : TRegExInstruction); //----------------// constructor
 begin
 
   inst               := ins;
@@ -241,6 +278,11 @@ begin
   retreatSet         := False;
   anchorSet          := False;
 
+  hasMatch           := False;
+  hasLocation        := False;
+  hasCount           := False;
+  hasCondition       := False;
+
 end;
 
 procedure instructionParser.populateInstruction; //-------------------------------// this function will pick up the code, split it in 4 segments, and populate the parser variables
@@ -248,6 +290,8 @@ var
   nInst              : String;
   i                  : Integer;
   j                  : Integer;
+  k                  : Integer;
+
   c                  : Char;
   currStr            : String;
 
@@ -259,6 +303,9 @@ var
   openEncCount       : Integer;
   clseEncCount       : Integer;
   prevChar           : Char;
+
+  ptrnDtls           : Array of String;
+  ptrnXtra           : String;
 begin
 
   // ----------------- First, expect a reference, integer ------------------------//
@@ -424,7 +471,53 @@ begin
 
   end;
   
-  inst^.pattern      := Trim(currStr);
+  ptrnDtls           := split_byWhiteSpace(Trim(currStr));
+
+  inst^.pattern      := Trim(ptrnDtls[0]);
+
+  WriteStr(nInst, inst^.instructionType);
+  history            := history + Chr(10) + 'Found Pattern: ' + Trim(inst^.pattern);
+
+  for k := 1 to Length(ptrnDtls)-1 do
+  begin
+
+    ptrnXtra         := Trim(ptrnDtls[k]);
+
+    // ------------------ See if there are match commands ------------------------//
+    if (ptrnXtra[1] = '%') then
+    begin
+      hasMatch       := True;
+      matchName      := ptrnXtra;
+      history        := history + Chr(10) + 'Found match variable: ' + matchName;
+    end;
+
+    // ---------------- See if there are location commands -----------------------//
+    if (ptrnXtra[1] = '@') then
+    begin
+      hasLocation    := True;
+      locationName   := ptrnXtra;
+      history        := history + Chr(10) + 'Found location variable: ' + locationName;
+    end;
+
+    // ----------------- See if there are count commands -------------------------//
+    if (ptrnXtra[1] = '_') then
+    begin
+      hasCount       := True;
+      CountName      := ptrnXtra;
+      history        := history + Chr(10) + 'Found count variable: ' + countName;
+    end;
+
+    // --------------- See if there are condition commands -----------------------//
+    if (ptrnXtra[1] = '$') then
+    begin
+      hasCondition   := True;
+      conditionName  := ptrnXtra;
+      history        := history + Chr(10) + 'Found match variable: ' + conditionName;
+    end;
+
+  end;
+
+
 
   // ------------------- Fourth, pick up the final Code --------------------------//
 
@@ -583,6 +676,8 @@ begin
 
                         runFiniteStateMachine_ex();
 
+
+
                       end;
   end;
 
@@ -689,6 +784,21 @@ begin
     begin
       match          := inst^.pattern;
       location       := i;
+
+      if hasCount then
+      begin
+        hasError     := True;
+        Error        := 'ER-EX-0000 : count isn''t supported by Exact Match';
+        Exit;
+      end;
+
+      if hasCondition then
+      begin
+        hasError     := True;
+        Error        := 'ER-EX-0001 : condition isn''t supported by Exact Match';
+        Exit;
+      end;
+
     end;
 
     Exit;
@@ -752,6 +862,7 @@ end;
 constructor regExNameSpace.Create(n: String);
 begin
   name               := n;
+  SetLength(vals,0);
 end;
 
 function regExNameSpace.pop(n: String): regExVal;
@@ -797,27 +908,32 @@ begin
   root^.genericCommands := nil;
   root^.location     := 0;
   root^.match        := '';
-  root^.pattern      := '';
+  root^.pattern      := '';   //--------------------------------------------------// Set all segments to nil
   root^.next         := nil;
   root^.prev         := nil;
   SetLength(root^.chld,0);
-  root^.prnt         := nil;
+  root^.prnt         := nil;  //--------------------------------------------------// Set all addresses to nil
 
-  root^.rawCode      := '';
+  root^.rawCode      := ''; //----------------------------------------------------// NO code
   root^.instMode     := regExModes.undef;
-  root^.chldComb     := regEx_multiModes.multi_undef;
+  root^.chldComb     := regEx_multiModes.multi_undef;  //-------------------------// set modes of node to undefined
 
   hasError           := False;
+  Error              := ''; //----------------------------------------------------// Remove errors
 
   fullCommand        := '';
-  Error              := '';
-  setLength(individualInstructions,0);
+  setLength(individualInstructions,0); //-----------------------------------------// Remove the currently handled command
 
   mode_ofRegEx       := regExModes.undef;
-  mode_ofMulti       := regEx_multiModes.multi_undef;
+  mode_ofMulti       := regEx_multiModes.multi_undef; //--------------------------// set currently handled modes to undefinded
+
+  history            := '';
 
   root^.ID           := 0;
-  runningID          := 0;
+  runningID          := 0; //-----------------------------------------------------// reset ID
+
+  SetLength(nameSpaces, 0);
+  SetLength(names, 0);  //--------------------------------------------------------// Clear namespaces
 
 
 end;
@@ -843,15 +959,15 @@ begin
   root^.genericCommands := nil;
   root^.location     := 0;
   root^.match        := '';
-  root^.pattern      := '';
+  root^.pattern      := '';   //--------------------------------------------------// Set all segments to nil
   root^.next         := nil;
   root^.prev         := nil;
   SetLength(root^.chld,0);
-  root^.prnt         := nil;
+  root^.prnt         := nil;  //--------------------------------------------------// Set all addresses to nil
 
-  root^.rawCode      := '';
+  root^.rawCode      := ''; //----------------------------------------------------// NO code
   root^.instMode     := regExModes.undef;
-  root^.chldComb     := regEx_multiModes.multi_undef; //--------------------------// root is set
+  root^.chldComb     := regEx_multiModes.multi_undef;  //-------------------------// set modes of node to undefined
 
   hasError           := False;
   Error              := '';   //--------------------------------------------------// Error is erased
@@ -867,6 +983,9 @@ begin
   runningID          := 0;  //----------------------------------------------------// ID is removed
 
   history            := ''; //----------------------------------------------------// history is reset
+
+  SetLength(nameSpaces, 0);
+  SetLength(names, 0);  //--------------------------------------------------------// Clear namespaces
 
   {TODO : ADD A PROPER GARBAGE COLLECTION}
 
@@ -928,6 +1047,10 @@ end;
 // --- If no child, then repeat with the next sibling
 // --- If no next, then go back to parent and try sibling of parent
 // --- If no next sibling of parent then break
+// ----------------------------------------------
+// --- In addition the pattern will contain the @Position, %Location ... etc
+// --- They will be handled in "ParseTree". ParseTree calls instructionParser.populateInstruction
+// --- That will identify these things
 procedure regExHandler.makeTree_ofInstructions; //--------------------------------// This one will shove things children of root.
                                                                                   // FOR example, given : { instruction 1 ;; && instruction 2 ;; }
                                                                                   // this is a compound, so we need to assosciate them as children of root
@@ -1056,9 +1179,35 @@ begin
 end;
 
 
-{ASSERT the testString is set}
 {Call this Fifth}
-procedure regExHandler.parseTree;
+procedure regExHandler.associateDefaultNameSpace(nm: String; ns: regExNameSpace );  // This will set the default namespace, which is the first element
+                                                                                    // of the namespace array
+begin
+  SetLength(nameSpaces, 1);
+  nameSpaces[0]      := ns;
+
+end;
+
+
+
+
+{ASSERT the testString is set}
+{Call this Sixth}
+
+// This will set the node ID of every regEx Instruction to the reference
+// ID was initially set to running ID in populateInstructions function
+// now, they are being changed.
+// (recall that TregExInstructions are
+// in a linked list tree where
+// parent <--> child and prevSibling <--> nextSibling)
+// (also recall that the the regExInstructionObjects themselves hold
+// status, ID, and result attributes
+
+procedure regExHandler.parseTree; //----------------------------------------------// parse the instructions.
+                                                                                  // in fourth call, combined instructions (e.g. "and" combinations)
+                                                                                  // were replaced by a PROCCHLD instruction.
+                                                                                  // If PROCCHLD, then deal with the children
+                                                                                  // ELSE solve the instruction.
 var
   curr               : TregExInstruction;
   ref                : Integer;
@@ -1066,6 +1215,8 @@ var
   pattern            : String;
   code               : String;
   iParser            : instructionParser;
+
+  rVal               : TRegExVal;
 begin
 
   curr               := New(TregExInstruction); //--------------------------------// Create a new current node
@@ -1104,15 +1255,87 @@ begin
       iParser.target := testString; //--------------------------------------------// Set search target
 
       iParser.parse(); //---------------------------------------------------------// ACTUALLY CALL PARSE
+                                                                                  // Since iParser is dynamically created and destroyed
+                                                                                  // extract the results
+                                                                                  // and put them in the Results array
+
+                                                                                  // AT this point, iparser.match
+                                                                                  // iparser.location are already populated
+                                                                                  // so we can work with them
+
+
+      if iParser.hasError then
+      begin
+        hasError     := True;
+        Error        := iParser.Error;
+        Exit;
+      end;
+      history        := history + Chr(10) + iParser.history;
 
       {TODO deal with the results}
 
+      curr^.status   := iParser.status;
+      curr^.result   := iParser.match;
+
+      curr^.ID       := iParser.inst^.reference; //-------------------------------// ID Was set to running ID. Is now the reference
+
+
+                                                                                  // At this point, if count or condition is worngly set
+                                                                                  // iParser.hasError will be set
+                                                                                  // (in the respective runFiniteStateMachine_XX functions)
+                                                                                  // and the program will already have exited.
+                                                                                  // so if any of the hasMatch or hasLocation etc
+                                                                                  // is true,then they should have been true.
+                                                                                  // The default variables should be inserted in
+                                                                                  // the default namespace. which is namesSpaces[0]
+      if iParser.hasMatch then
+      begin
+        rVal         := New(TRegExVal);
+        rVal^.name   := iParser.matchName; //-------------------------------------// Set Variable Name
+        rVal^.vtp    := varTypes.s; //--------------------------------------------// Set variable type
+        rVal^.s      := iparser.match; //-----------------------------------------// set variable value
+        rVal^.isar   := False; //-------------------------------------------------// Not an array
+
+        SetLength(nameSpaces[0].vals, Length(nameSpaces[0].vals) + 1);
+        nameSpaces[0].vals[Length(nameSpaces[0].vals) - 1] := rVal; //------------// insert into the default namespace
+      end;
+
+      if iParser.hasLocation then //----------------------------------------------// same story as above.
+      begin
+        rVal         := New(TRegExVal);
+        rVal^.name   := iParser.locationName;
+        rVal^.vtp    := varTypes.i;
+        rVal^.i      := iparser.location;
+        rVal^.isar   := False;
+
+        SetLength(nameSpaces[0].vals, Length(nameSpaces[0].vals) + 1);
+        nameSpaces[0].vals[Length(nameSpaces[0].vals) - 1] := rVal;
+      end;
+
+
+      iParser.Free;
     end;
     if Length(curr^.chld) = 0 then break; //--------------------------------------// TEST PURPOSES. WHEN CHILDBEARING NODE PARSING IMPLEMENTED,
                                                                                   // CHANGE THIS
 
   end;
 end;
+
+function regExHandler.getResult(id: Integer): regExResult;
+begin
+
+end;
+
+function regExHandler.getResult(id: array of Integer): regExResult;
+begin
+
+end;
+
+procedure regExHandler.addNameSpace(nm: String; ns: regExNameSpace);
+begin
+
+end;
+
 
 {HELPER FUNCTIONS}
 procedure regExHandler.recognizeAtoms;  //----------------------------------------// recognize, if this is multi or single instruction mode

@@ -33,7 +33,7 @@ type
 var
   Form1: TForm1;         
   regExEngine    : berylEngine.regExHandler;
-
+  regExResult    : berylEngine.regExResult;
 
 implementation
 
@@ -81,8 +81,11 @@ begin
   if(regExEngine.hasError) then Analysis.Append('=================='+Chr(13)+'Error: ' + regExEngine.error+Chr(13) + '=================='); //// If there is an error - then print it
 
 
+  regExResult        := regExEngine.getResult(1);
 
   Analysis.Append(regExEngine.history);
+
+
 
 
   //regExEngine.loadTestString();
