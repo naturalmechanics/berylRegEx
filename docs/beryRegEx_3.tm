@@ -217,8 +217,6 @@
   which is here shown enclosed in a pair of backslash. A real, non-fictional
   OOP language will probably not allow it.
 
-  \;
-
   The regExHandler object exposes a method
   <with|color|blue|match_againstTestString>. This method accepts the Test
   String as an argument. It returns an object in return, here stored in the
@@ -229,7 +227,51 @@
   The variable <with|color|blue|M> has a field <with|color|blue|status>,
   which reports whether the search was successful or not. Another field,
   <with|color|blue|results>, stores a dictionary where all the matches will
-  be stored.
+  be stored. This is merely an example. In practice, we can also write:\ 
+
+  \;
+
+  <\verse>
+    <\with|font-family|tt>
+      <\with|color|blue>
+        testString := \PFooBarBaz\Q;
+
+        \;
+
+        \ regExObj1 := new regExHandler(
+
+        <space|7em>\<backslash\>
+
+        <space|8em>42 : EX : Bar : \|\|{}\|\|;;\ 
+
+        <space|7em>\<backslash\>
+
+        <space|6em>);
+
+        \;
+
+        <space|4.5em>regExObj1.testString := testString;
+
+        <space|4.5em>regExObj1.match_againstTestString();
+
+        <space|4.5em>M := regExObj.get_results(42);
+
+        <space|4em>
+
+        assert(M.status = True);
+
+        assert(M.result = \PBar\Q);
+      </with>
+    </with>
+  </verse>
+
+  \;
+
+  The exacts are left to the implementing language. The Lazarus/Freepascal
+  implementation uses the second variant. Note that we already know the
+  references of each command, when we are programming the regExHandler.
+  Therefore, we can always call <with|color|blue|get_results> with absolute
+  certainty of the reference.
 
   <section|Segments of a Beryl Instruction>
 
@@ -664,43 +706,26 @@
 
   \;
 
-  <\itemize-minus>
-    <item>Semicolon : \<backslash\>;
+  <tabular|<tformat|<table|<row|<cell|Semicolon : \<backslash\>;
+  >|<cell|>|<cell|>|<cell|Colon : \<backslash\>:>|<cell|>|<cell|>|<cell|Open
+  Parenthesis : \<backslash\>(>|<cell|>|<cell|>|<cell|Open Brace :
+  \<backslash\>{>>|<row|<cell|Vertical Bar :
+  \<backslash\>\|>|<cell|>|<cell|>|<cell|At symbol :
+  \<backslash\>@>|<cell|>|<cell|>|<cell|Close Parenthesis :
+  \<backslash\>)>|<cell|>|<cell|>|<cell|Close Brace :
+  \<backslash\>}>>|<row|<cell|Open Bracket :
+  \<backslash\>[>|<cell|>|<cell|>|<cell|Percent Symbol :
+  \<backslash\>%>|<cell|>|<cell|>|<cell|Dollar Symbol :
+  \<backslash\>$>|<cell|>|<cell|>|<cell|Backslash :
+  \<backslash\>\<backslash\>>>|<row|<cell|Close Bracket :
+  \<backslash\>]>|<cell|>|<cell|>|<cell|Underscore Symbol :
+  \<backslash\>_>|<cell|>|<cell|>|<cell|Hash Symbol :
+  \<backslash\>#>|<cell|>|<cell|>|<cell|Exclaimation :
+  \<backslash\>!>>|<row|<cell|Tilda : \<backslash\>~>|<cell|>|<cell|>|<cell|>|<cell|>|<cell|>|<cell|>|<cell|>|<cell|>|<cell|>>>>>
 
-    <item>Vertical Bar : \<backslash\>\|
+  \;
 
-    <item>Colon : \<backslash\>:
-
-    <item>Open Parenthesis : \<backslash\>(
-
-    <item>Close Parenthesis : \<backslash\>)
-
-    <item>Open Brace : \<backslash\>{
-
-    <item>Close Brace : \<backslash\>}
-
-    <item>Open Bracket : \<backslash\>[
-
-    <item>Close Bracket : \<backslash\>]
-
-    <item>At symbol : \<backslash\>@
-
-    <item>Percent Symbol : \<backslash\>%
-
-    <item>Underscore Symbol : \<backslash\>_
-
-    <item>Dollar Symbol : \<backslash\>$
-
-    <item>Hash Symbol : \<backslash\>#
-
-    <item>Backslash : \<backslash\>\<backslash\>
-
-    <item>Exclaimation : \<backslash\>!
-
-    <item>Tilda : \<backslash\>~
-  </itemize-minus>
-
-  \ 
+  \;
 
   \;
 
