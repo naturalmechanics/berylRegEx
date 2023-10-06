@@ -408,7 +408,10 @@
   characters. Therefore, the Test String in this example appears as
   <with|color|blue|oBarBaz> to the matching algorithm. <with|color|dark
   green|If offset is not specified, then it is assumed to be>
-  <with|color|blue|0>. \ 
+  <with|color|blue|0>. <with|color|dark green|If offset is equal or goes
+  beyond length of Test String - length of Search String, then no search is
+  performed. However, no error is thrown. In the current implementation, only
+  a warning is shown. If offset is negative, an error is thrown.>
 
   \;
 
@@ -453,8 +456,13 @@
   <with|color|blue|o> of the Test String, and looks at no further than
   <with|color|blue|2> characters after that. Thus the total examined part of
   the Test String here is <with|color|blue|oB>. Of course, this leads to a
-  match failure. <with|color|dark green|If Range is not specified, then it is
-  assumed to be the whole length of the Test String.>
+  match failure. <with|color|dark green|If range is not specified, then it is
+  assumed to be the whole length of the Test String. If range is negative, or
+  less than the length of the Search String, an error is thrown in the
+  current implementation. If range goes beyond the length of the test string,
+  then it is reduced to the length of the test string.>
+
+  \;
 
   <paragraph|Fence>Fence sets a limit on how far the search algorithm can go,
   starting from the right end of the Test string. Example:
@@ -492,6 +500,10 @@
   \;
 
   Here, the algorithm will see <with|color|blue|FooBarB> as the Test String.
+  \ <with|color|dark green|If fence is negative, an error is thrown. If fence
+  is equal or larger than the length of the Search String, no error is thrown
+  in the current implementation. A warning is generated, that no match is
+  possible.>
 
   \;
 
@@ -631,11 +643,15 @@
   \;
 
   <\itemize-minus>
-    <item>With Offset, Retreat, and Fence Specified, if Retreat goes beyond
-    Offset, then Offset gets priority
+    <item>With Offset and Range both specified, ff range goes beyond the
+    length of the test string - Offset, then it is reduced to the length of
+    the test string - Offset.
 
     <item>With Offset, Range, and Fence specified, if Range goes beyond
     Fence, then Fence gets priority
+
+    <item>With Offset, Retreat, and Fence Specified, if Retreat goes beyond
+    Offset, then Offset gets priority
 
     <item>Every other error leads to an Error condition.
     <with|font-series|bold|This can change in future.>
@@ -4526,14 +4542,14 @@
     <associate|auto-14|<tuple|1.2.2.3.2|8>>
     <associate|auto-15|<tuple|1.2.2.3.3|9>>
     <associate|auto-16|<tuple|1.2.2.3.4|9>>
-    <associate|auto-17|<tuple|1.2.2.3.5|9>>
+    <associate|auto-17|<tuple|1.2.2.3.5|10>>
     <associate|auto-18|<tuple|1.2.2.3.6|10>>
-    <associate|auto-19|<tuple|1.2.3|10>>
+    <associate|auto-19|<tuple|1.2.3|11>>
     <associate|auto-2|<tuple|1.1|5>>
-    <associate|auto-20|<tuple|1.2.3.0.1|10>>
-    <associate|auto-21|<tuple|1.2.3.0.2|10>>
-    <associate|auto-22|<tuple|1.2.3.0.3|10>>
-    <associate|auto-23|<tuple|1.2.3.0.4|10>>
+    <associate|auto-20|<tuple|1.2.3.0.1|11>>
+    <associate|auto-21|<tuple|1.2.3.0.2|11>>
+    <associate|auto-22|<tuple|1.2.3.0.3|11>>
+    <associate|auto-23|<tuple|1.2.3.0.4|11>>
     <associate|auto-24|<tuple|1.2.4|11>>
     <associate|auto-25|<tuple|1.2.5|11>>
     <associate|auto-26|<tuple|2|13>>
