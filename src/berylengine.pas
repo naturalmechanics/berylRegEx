@@ -203,6 +203,8 @@ type
     target           : String;
     modifiedTarget   : String;
 
+    // ------------------- components for capture variables ----------------------//
+
     match            : String;
     location         : Integer;
     count            : Integer;
@@ -253,6 +255,9 @@ type
     procedure parseTypeCommands_ex();
     procedure runFiniteStateMachine_ex();
 
+    procedure parseTypeCommands_eq();
+    procedure runFiniteStateMachine_eq();
+
     procedure getDefaultVals();
     procedure runAdditionalCode();
 
@@ -263,7 +268,7 @@ implementation
 
 { instructionParser }
 
-constructor instructionParser.create (ins : TRegExInstruction); //----------------// constructor
+constructor instructionParser.create (ins : TRegExInstruction); //----------------// constructor. This is called from regExHandler.ParseTree
 begin
 
   inst               := ins;
@@ -285,7 +290,9 @@ begin
 
 end;
 
-procedure instructionParser.populateInstruction; //-------------------------------// this function will pick up the code, split it in 4 segments, and populate the parser variables
+procedure instructionParser.populateInstruction; //-------------------------------// this function will pick up the code,
+                                                                                  // split it in 4 segments,
+                                                                                  // and populate the parser variables
 var
   nInst              : String;
   i                  : Integer;
@@ -359,16 +366,29 @@ begin
        end;
     if (
                                                                                   // We do NOT break at a space. The space are read
-                                                                                  // this makes life easier. We do not have to continue reading the spaces.
-          ( c = ':') or //--------------------------------------------------------// Type declaration without type comands. already found the second colon.
-          ( c = '{') //-----------------------------------------------------------// or the open enclosure
-       ) and foundText then //----------------------------------------------------// Has read something
+                                                                                  // this makes life easier.
+                                                                                  // We do not have to continue reading the spaces
+                                                                                  // in the next part
+                                                                                  // In a normal case, we expect that
+                                                                                  // The program reads something other than whitespace
+                                                                                  // then either encounters an opening brace
+                                                                                  // (if type commands are specified)
+                                                                                  // or encounters a colon (no type or generic commands)
+          ( c = ':') or //--------------------------------------------------------// Already found the second colon before any {}.
+                                                                                  // That means
+                                                                                  // No type commands or generic commands.
+                                                                                  // or
+          ( c = '{') //-----------------------------------------------------------// Found the open enclosure for type Commands
+                                                                                  // and
+       ) and foundText then //----------------------------------------------------// Has read something that is not whitespace
           begin
-            break; //-------------------------------------------------------------// No need to read anything.
+            break; //-------------------------------------------------------------// No need to read any more.
+                                                                                  // The already read string is the type
           end;
   end;
 
   case Trim(currStr) of  //-------------------------------------------------------// set the enum for the type
+       'EXACT' :
        'EX' : inst^.instructionType := instructionTypes.EX;
        'EQ' : inst^.instructionType := instructionTypes.EQ;
        'EC' : inst^.instructionType := instructionTypes.EC;
@@ -672,11 +692,14 @@ begin
   case inst^.instructionType of
        instructionTypes.EX:
                       begin
+
                         parseTypeCommands_ex();
 
                         runFiniteStateMachine_ex();
 
-
+                      end;
+       instructionTypes.EQ:
+                      begin
 
                       end;
   end;
@@ -767,7 +790,245 @@ begin
 
     fnd              := True;
 
-    for i := 1 to Length(target) do
+    for i := 1 to Length(target) - Length(inst^.pattern) do //--------------------// start search at index 1 (strings have index 1) of test string
+    begin
+      fnd            := True; //--------------------------------------------------// assume found
+      for j := 1 to Length(inst^.pattern) do //-----------------------------------// IF pattern is empty, then loop will not run
+                                                                                  // but assumtion, that pattern is found will remain true.
+      begin
+        fnd          := fnd and (target[i+j-1] = inst^.pattern[j]); //------------// check if each character in pattern is found
+        if not fnd then break; //-------------------------------------------------// If not found then stop and go try with next index of test string
+      end;
+      if fnd then Break; //-------------------------------------------------------// if success, then stop searching. if not found, then the outer loop
+                                                                                  // (with i) will loop to end. in the last run another check will be
+                                                                                  // performed by inner loop (with j)
+                                                                                  // if not found, this final check will set fnd to false.
+    end;
+
+    status           := fnd; //---------------------------------------------------// Check if found
+
+    if status then
+    begin
+      match          := inst^.pattern;
+      location       := i;
+
+      if hasCount then
+      begin
+        hasError     := True;
+        Error        := 'ER-EX-0000 : count isn''t supported by Exact Match'; //--// Error. don't know what to do.
+        Exit;
+      end;
+
+      if hasCondition then
+      begin
+        hasError     := True;
+        Error        := 'ER-EX-0001 : condition isn''t supported by Exact Match';
+        Exit;
+      end;
+
+    end;
+
+    Exit;
+
+  end;
+
+
+  // ------------------------- only offset is set --------------------------------//
+
+  if (offsetSet) and (not rangeSet) and (not fenceSet) and (not retreatSet) and (not anchorSet) then
+  begin
+
+    if offset > Length(target)- Length(inst^.pattern) then //---------------------// Assume the Test String is ABhelloCD. The test string is hello.
+                                                                                  // in strings, index is at 1.
+                                                                                  // so, if offset is 4, then we start at lloCD, it is still long enough
+                                                                                  // to fit hello
+                                                                                  // length of ABhelloCD = 9.
+                                                                                  // 9 - 5 = 4
+                                                                                  // offset can be max length(teststring) - length(pattern)
+    begin
+      history        := history + Chr(10) + 'WR-EX-0001 : Warning : After offset not sufficient length remains. No match is possible.';
+      Exit;
+    end;
+
+    fnd              := True;
+
+    if offset < 0 then
+    begin
+      hasError     := True;
+      Error        := 'ER-EX-0002 : offset can''t be less than 0, at : ' + inst^.rawCode;
+      Exit;
+    end;
+
+    for i := 1 + offset to Length(target) - Length(inst^.pattern) + 1 do //-------// test only between between start index offset + 1 = 5 (remaining : lloCD)
+                                                                                  // and start index length(teststring) - length(pattern) + 1 = 4 + 1 = 5 ( also lloCD)
+                                                                                  // If we had ABHelloCDE, then (without knowing anything else) the
+                                                                                  // pattern could be at the last 5 places (strat index 6, covering 6,7,8,9 an 10th
+                                                                                  // character )
+                                                                                  // so the upper limit of start index would have been 10-5+1 = 6
+    begin
+      fnd            := True;
+      for j := 1 to Length(inst^.pattern) do
+      begin
+        fnd          := fnd and (target[i+j-1] = inst^.pattern[j]);
+        if not fnd then break;
+      end;
+      if fnd then Break;
+    end;
+
+    status           := fnd;
+
+    if status then
+    begin
+      match          := inst^.pattern;
+      location       := i;
+
+      if hasCount then
+      begin
+        hasError     := True;
+        Error        := 'ER-EX-0000 : count isn''t supported by Exact Match';
+        Exit;
+      end;
+
+      if hasCondition then
+      begin
+        hasError     := True;
+        Error        := 'ER-EX-0001 : condition isn''t supported by Exact Match';
+        Exit;
+      end;
+
+    end;
+
+    Exit;
+
+  end;        
+
+
+
+
+  // ---------------------------- only range is set ------------------------------//
+
+  if (not offsetSet) and (rangeSet) and (not fenceSet) and (not retreatSet) and (not anchorSet) then
+  begin
+
+    if range <= 0 then
+    begin
+      hasError       := True;
+      Error          := 'ER-EX-0003 : Range is 0 or negative. No match is possible.';
+      Exit;
+    end;
+
+    if range < Length(inst^.pattern) then
+    begin
+      hasError       := True;
+      Error          := 'ER-EX-0004 : Range is shorter than pattern length. No match is possible.';
+      Exit;
+    end;
+
+    if range > Length(Target) then
+    begin
+      history        := history + Chr(10) + 'Range is larger than length of Test String ''' + target + ''' resetting.';
+      range          := Length(Target);
+    end;
+
+    fnd              := True;
+
+    for i := 1 to range -  Length(inst^.pattern) + 1 do //------------------------// same as below. Just offset = 0.
+    begin
+      fnd            := True;
+      for j := 1 to Length(inst^.pattern) do
+      begin
+        fnd          := fnd and (target[i+j-1] = inst^.pattern[j]);
+        if not fnd then break;
+      end;
+      if fnd then Break;
+    end;
+
+    status           := fnd;
+
+    if status then
+    begin
+      match          := inst^.pattern;
+      location       := i;
+
+      if hasCount then
+      begin
+        hasError     := True;
+        Error        := 'ER-EX-0000 : count isn''t supported by Exact Match';
+        Exit;
+      end;
+
+      if hasCondition then
+      begin
+        hasError     := True;
+        Error        := 'ER-EX-0001 : condition isn''t supported by Exact Match';
+        Exit;
+      end;
+
+    end;
+
+    Exit;
+
+  end;
+
+
+
+  // -------------------- offset as well as range is set -------------------------//
+
+  if (offsetSet) and (rangeSet) and (not fenceSet) and (not retreatSet) and (not anchorSet) then
+  begin
+
+    if offset > Length(target)- Length(inst^.pattern)  then  //-------------------// same as before
+    begin
+      history        := history + Chr(10) + 'WR-EX-0002 : Warning : offset is larger than length. No match is possible.';
+      Exit;
+    end;
+
+    if range <= 0 then //---------------------------------------------------------// Range does not work if less than or equal 0
+    begin
+      hasError       := True;
+      Error          := 'ER-EX-0003 : Range is 0 or negative. No match is possible.';
+      Exit;
+    end;
+
+    if range < Length(inst^.pattern) then //--------------------------------------// no sufficient search space.
+    begin
+      hasError       := True;
+      Error          := 'ER-EX-0004 : Range is shorter than pattern length. No match is possible.';
+      Exit;
+    end;
+
+    if offset < 0 then
+    begin
+      hasError     := True;
+      Error        := 'ER-EX-0002 : offset can''t be less than 0, at : ' + inst^.rawCode;
+      Exit;
+    end;
+
+    if range > Length(Target) - offset then
+    begin
+      history        := history + Chr(10) + 'Range is larger than the remaining length of Test String ''' + target + ''' resetting.';
+      range          := Length(Target) - offset ;
+    end;
+
+    fnd              := True;
+
+    for i := 1 + offset to offset + range - Length(inst^.pattern) + 1 do //-------// again, assume the test string is ABhelloCDEF
+                                                                                  // and search string is hello
+                                                                                  // offset is, say, 2, so we target the sub string : helloCDEF
+                                                                                  // so start index at the beginning of the loop is 3
+                                                                                  // (for h, after dropping AB)
+                                                                                  // say range is 7 (must be larger than Length of search string
+                                                                                  // or equal. here length of search string is 5)
+                                                                                  // so, we look up to helloCD (7 more characters)
+                                                                                  // up to index 9.  9 = offset + range
+                                                                                  // The match must be found within these characters.
+                                                                                  // But the outer loop needs to start at the character 'h'
+                                                                                  // or maximum at the first 'l'
+                                                                                  // helloCD ends at index 9. (index of 'D' is 9)
+                                                                                  // 9 - 5 (length of pattern) = 4
+                                                                                  // which is the index of 'e'
+                                                                                  // but we want the index of first 'l', index is 5 so
+                                                                                  // we need 9 - 5 + 1. = offset + range - Length(pattern) + 1
     begin
       fnd            := True;
       for j := 1 to Length(inst^.pattern) do
@@ -810,40 +1071,80 @@ begin
 
 
 
-  for i := offset to Length(target) do
+  // ---------------------------- only fence is set ------------------------------//
+
+  if (not offsetSet) and (not rangeSet) and (fenceSet) and (not retreatSet) and (not anchorSet) then
   begin
 
-  end;
-
-  if ( offsetSet ) then
-  begin
-    for i := offset to Length(target) do
+    if range <= 0 then
     begin
+      hasError       := True;
+      Error          := 'ER-EX-0005 : Fence is 0 or negative. Don''t know what to do.';
+      Exit;
+    end;
+
+    if fence > Length(target) - Length(inst^.pattern) then
+    begin
+      history        := history + Chr(10) + 'WR-EX-0002 : Warning : Before fence not sufficient length remains. No match is possible.';
+      Exit;
+    end;
+
+    fnd              := True;
+
+    for i := 1 to Length(target) - Length(inst^.pattern) - fence do //------------// reduce by fence
+    begin
+      fnd            := True;
+      for j := 1 to Length(inst^.pattern) do
+      begin
+        fnd          := fnd and (target[i+j-1] = inst^.pattern[j]);
+        if not fnd then break;
+      end;
+      if fnd then Break;
+    end;
+
+    status           := fnd;
+
+    if status then
+    begin
+      match          := inst^.pattern;
+      location       := i;
+
+      if hasCount then
+      begin
+        hasError     := True;
+        Error        := 'ER-EX-0000 : count isn''t supported by Exact Match';
+        Exit;
+      end;
+
+      if hasCondition then
+      begin
+        hasError     := True;
+        Error        := 'ER-EX-0001 : condition isn''t supported by Exact Match';
+        Exit;
+      end;
 
     end;
-  end;
-  if ( offsetSet and rangeSet) then
-  begin
-    for i := offset to range do
-    begin
 
-    end;
-  end;
-  if ( offsetSet and (not rangeSet)) then begin
+    Exit;
 
   end;
-  if ( fenceSet and (not retreatSet)) then begin
 
-  end;
-  if ( fenceSet and retreatSet) then begin
 
-  end;
-  if ( anchorSet ) then begin
 
-  end;
+
 
   hasError           := True;
   Error              := 'ER-PR-0001 : EXACT Parsing failed, because generic command combination is wrong' ;
+
+end;
+
+procedure instructionParser.parseTypeCommands_eq;
+begin
+
+end;
+
+procedure instructionParser.runFiniteStateMachine_eq;
+begin
 
 end;
 
