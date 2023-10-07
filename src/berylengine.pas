@@ -815,14 +815,14 @@ begin
       if hasCount then
       begin
         hasError     := True;
-        Error        := 'ER-EX-0000 : count isn''t supported by Exact Match'; //--// Error. don't know what to do.
+        Error        := 'ER-GN-0000 : count isn''t supported by Exact Match'; //--// Error. don't know what to do.
         Exit;
       end;
 
       if hasCondition then
       begin
         hasError     := True;
-        Error        := 'ER-EX-0001 : condition isn''t supported by Exact Match';
+        Error        := 'ER-GN-0001 : condition isn''t supported by Exact Match';
         Exit;
       end;
 
@@ -846,7 +846,7 @@ begin
                                                                                   // 9 - 5 = 4
                                                                                   // offset can be max length(teststring) - length(pattern)
     begin
-      history        := history + Chr(10) + 'WR-EX-0001 : Warning : After offset not sufficient length remains. No match is possible.';
+      history        := history + Chr(10) + 'WR-GN-0001 : Warning : After offset not sufficient length remains. No match is possible.';
       Exit;
     end;
 
@@ -855,7 +855,7 @@ begin
     if offset < 0 then
     begin
       hasError     := True;
-      Error        := 'ER-EX-0002 : offset can''t be less than 0, at : ' + inst^.rawCode;
+      Error        := 'ER-GN-0002 : offset can''t be less than 0, at : ' + inst^.rawCode;
       Exit;
     end;
 
@@ -885,14 +885,14 @@ begin
       if hasCount then
       begin
         hasError     := True;
-        Error        := 'ER-EX-0000 : count isn''t supported by Exact Match';
+        Error        := 'ER-GN-0000 : count isn''t supported by Exact Match';
         Exit;
       end;
 
       if hasCondition then
       begin
         hasError     := True;
-        Error        := 'ER-EX-0001 : condition isn''t supported by Exact Match';
+        Error        := 'ER-GN-0001 : condition isn''t supported by Exact Match';
         Exit;
       end;
 
@@ -913,14 +913,14 @@ begin
     if range <= 0 then
     begin
       hasError       := True;
-      Error          := 'ER-EX-0003 : Range is 0 or negative. No match is possible.';
+      Error          := 'ER-GN-0003 : Range is 0 or negative. No match is possible.';
       Exit;
     end;
 
     if range < Length(inst^.pattern) then
     begin
       hasError       := True;
-      Error          := 'ER-EX-0004 : Range is shorter than pattern length. No match is possible.';
+      Error          := 'ER-GN-0004 : Range is shorter than pattern length. No match is possible.';
       Exit;
     end;
 
@@ -953,14 +953,14 @@ begin
       if hasCount then
       begin
         hasError     := True;
-        Error        := 'ER-EX-0000 : count isn''t supported by Exact Match';
+        Error        := 'ER-GN-0000 : count isn''t supported by Exact Match';
         Exit;
       end;
 
       if hasCondition then
       begin
         hasError     := True;
-        Error        := 'ER-EX-0001 : condition isn''t supported by Exact Match';
+        Error        := 'ER-GN-0001 : condition isn''t supported by Exact Match';
         Exit;
       end;
 
@@ -986,21 +986,21 @@ begin
     if range <= 0 then //---------------------------------------------------------// Range does not work if less than or equal 0
     begin
       hasError       := True;
-      Error          := 'ER-EX-0003 : Range is 0 or negative. No match is possible.';
+      Error          := 'ER-GN-0003 : Range is 0 or negative. No match is possible. At ' + inst^.rawCode;;
       Exit;
     end;
 
     if range < Length(inst^.pattern) then //--------------------------------------// no sufficient search space.
     begin
       hasError       := True;
-      Error          := 'ER-EX-0004 : Range is shorter than pattern length. No match is possible.';
+      Error          := 'ER-GN-0004 : Range is shorter than pattern length. No match is possible. At ' + inst^.rawCode;;
       Exit;
     end;
 
     if offset < 0 then
     begin
       hasError     := True;
-      Error        := 'ER-EX-0002 : offset can''t be less than 0, at : ' + inst^.rawCode;
+      Error        := 'ER-GN-0002 : offset can''t be less than 0, at : ' + inst^.rawCode;
       Exit;
     end;
 
@@ -1049,14 +1049,14 @@ begin
       if hasCount then
       begin
         hasError     := True;
-        Error        := 'ER-EX-0000 : count isn''t supported by Exact Match';
+        Error        := 'ER-GN-0000 : count isn''t supported by Exact Match';
         Exit;
       end;
 
       if hasCondition then
       begin
         hasError     := True;
-        Error        := 'ER-EX-0001 : condition isn''t supported by Exact Match';
+        Error        := 'ER-GN-0001 : condition isn''t supported by Exact Match';
         Exit;
       end;
 
@@ -1076,16 +1076,16 @@ begin
   if (not offsetSet) and (not rangeSet) and (fenceSet) and (not retreatSet) and (not anchorSet) then
   begin
 
-    if range <= 0 then
-    begin
-      hasError       := True;
-      Error          := 'ER-EX-0005 : Fence is 0 or negative. Don''t know what to do.';
-      Exit;
-    end;
-
     if fence > Length(target) - Length(inst^.pattern) then
     begin
       history        := history + Chr(10) + 'WR-EX-0002 : Warning : Before fence not sufficient length remains. No match is possible.';
+      Exit;
+    end;
+
+    if fence < 0 then
+    begin
+      hasError     := True;
+      Error        := 'ER-GN-0005 : fence can''t be less than 0, at : ' + inst^.rawCode;
       Exit;
     end;
 
@@ -1112,14 +1112,14 @@ begin
       if hasCount then
       begin
         hasError     := True;
-        Error        := 'ER-EX-0000 : count isn''t supported by Exact Match';
+        Error        := 'ER-GN-0000 : count isn''t supported by Exact Match';
         Exit;
       end;
 
       if hasCondition then
       begin
         hasError     := True;
-        Error        := 'ER-EX-0001 : condition isn''t supported by Exact Match';
+        Error        := 'ER-GN-0001 : condition isn''t supported by Exact Match';
         Exit;
       end;
 
@@ -1131,10 +1131,308 @@ begin
 
 
 
+  // ------------------------- offset and fence is set ---------------------------//
+
+  if (offsetSet) and (not rangeSet) and (fenceSet) and (not retreatSet) and (not anchorSet) then
+  begin
+
+    if fence > Length(target) - Length(inst^.pattern) then
+    begin
+      history        := history + Chr(10) + 'WR-EX-0002 : Warning : Before fence not sufficient length remains. No match is possible.';
+      Exit;
+    end;
+
+    if fence < 0 then
+    begin
+      hasError     := True;
+      Error        := 'ER-GN-0005 : fence can''t be less than 0, at : ' + inst^.rawCode;
+      Exit;
+    end;
+
+    if offset > Length(target)- Length(inst^.pattern) then //---------------------// Assume the Test String is ABhelloCD. The test string is hello.
+                                                                                  // in strings, index is at 1.
+                                                                                  // so, if offset is 4, then we start at lloCD, it is still long enough
+                                                                                  // to fit hello
+                                                                                  // length of ABhelloCD = 9.
+                                                                                  // 9 - 5 = 4
+                                                                                  // offset can be max length(teststring) - length(pattern)
+    begin
+      history        := history + Chr(10) + 'WR-EX-0001 : Warning : After offset not sufficient length remains. No match is possible.';
+      Exit;
+    end;
+
+    fnd              := True;
+
+    if offset < 0 then
+    begin
+      hasError     := True;
+      Error        := 'ER-GN-0002 : offset can''t be less than 0, at : ' + inst^.rawCode;
+      Exit;
+    end;
+
+    if offset > Length(target) - fence  then
+    begin
+      hasError     := True;
+      Error        := 'ER-GN-0006 : offset is beyond Fence : ' + inst^.rawCode;
+      Exit;
+    end;
+
+    fnd              := True;
+
+    for i := 1 + offset to Length(target) - Length(inst^.pattern) - fence do //---// reduce by fence and add offset
+    begin
+      fnd            := True;
+      for j := 1 to Length(inst^.pattern) do
+      begin
+        fnd          := fnd and (target[i+j-1] = inst^.pattern[j]);
+        if not fnd then break;
+      end;
+      if fnd then Break;
+    end;
+
+    status           := fnd;
+
+    if status then
+    begin
+      match          := inst^.pattern;
+      location       := i;
+
+      if hasCount then
+      begin
+        hasError     := True;
+        Error        := 'ER-GN-0000 : count isn''t supported by Exact Match';
+        Exit;
+      end;
+
+      if hasCondition then
+      begin
+        hasError     := True;
+        Error        := 'ER-GN-0001 : condition isn''t supported by Exact Match';
+        Exit;
+      end;
+
+    end;
+
+    Exit;
+
+  end;
+
+
+
+  // ------------------------- range and fence is set ----------------------------//
+
+  if (not offsetSet) and (rangeSet) and (fenceSet) and (not retreatSet) and (not anchorSet) then
+  begin
+
+    if fence > Length(target) - Length(inst^.pattern) then
+    begin
+      history        := history + Chr(10) + 'WR-EX-0002 : Warning : Before fence not sufficient length remains. No match is possible.';
+      Exit;
+    end;
+
+    if fence < 0 then
+    begin
+      hasError     := True;
+      Error        := 'ER-GN-0005 : fence can''t be less than 0, at : ' + inst^.rawCode;
+      Exit;
+    end;
+
+    if range <= 0 then
+    begin
+      hasError       := True;
+      Error          := 'ER-GN-0003 : Range is 0 or negative. No match is possible.';
+      Exit;
+    end;
+
+    if range < Length(inst^.pattern) then
+    begin
+      hasError       := True;
+      Error          := 'ER-GN-0004 : Range is shorter than pattern length. No match is possible.';
+      Exit;
+    end;
+
+    if range > Length(Target) then
+    begin
+      history        := history + Chr(10) + 'Range is larger than length of Test String ''' + target + ''' resetting.';
+      range          := Length(Target);
+    end;
+
+    if range > (Length(target) - fence) then
+    begin
+
+      history        := history + Chr(10) + 'Range is conflicting with fence : ' + fence + ''' resetting.';
+      range          := (Length(target) - fence);
+
+    end;
+
+    fnd              := True;
+
+    for i := 1 to range -  Length(inst^.pattern) + 1 do //------------------------// use range algorithm
+    begin
+      fnd            := True;
+      for j := 1 to Length(inst^.pattern) do
+      begin
+        fnd          := fnd and (target[i+j-1] = inst^.pattern[j]);
+        if not fnd then break;
+      end;
+      if fnd then Break;
+    end;
+
+    status           := fnd;
+
+    if status then
+    begin
+      match          := inst^.pattern;
+      location       := i;
+
+      if hasCount then
+      begin
+        hasError     := True;
+        Error        := 'ER-GN-0000 : count isn''t supported by Exact Match';
+        Exit;
+      end;
+
+      if hasCondition then
+      begin
+        hasError     := True;
+        Error        := 'ER-GN-0001 : condition isn''t supported by Exact Match';
+        Exit;
+      end;
+
+    end;
+
+    Exit;
+
+  end;
+
+
+  // -------------------- offset and range and fence is set ----------------------//
+
+  if (not offsetSet) and (rangeSet) and (fenceSet) and (not retreatSet) and (not anchorSet) then
+  begin
+
+    if fence > Length(target) - Length(inst^.pattern) then
+    begin
+      history        := history + Chr(10) + 'WR-EX-0002 : Warning : Before fence not sufficient length remains. No match is possible.';
+      Exit;
+    end;
+
+    if fence < 0 then
+    begin
+      hasError     := True;
+      Error        := 'ER-GN-0005 : fence can''t be less than 0, at : ' + inst^.rawCode;
+      Exit;
+    end;
+
+    if range <= 0 then
+    begin
+      hasError       := True;
+      Error          := 'ER-GN-0003 : Range is 0 or negative. No match is possible.';
+      Exit;
+    end;
+
+    if range < Length(inst^.pattern) then
+    begin
+      hasError       := True;
+      Error          := 'ER-GN-0004 : Range is shorter than pattern length. No match is possible.';
+      Exit;
+    end;
+
+    if range > Length(Target) then
+    begin
+      history        := history + Chr(10) + 'Range is larger than length of Test String ''' + target + ''' resetting.';
+      range          := Length(Target);
+    end;
+
+    if range > (Length(target) - fence) then
+    begin
+
+      history        := history + Chr(10) + 'Range is conflicting with fence : ' + fence + ''' resetting.';
+      range          := (Length(target) - fence);
+
+    end;
+
+    if offset > Length(target)- Length(inst^.pattern) then //---------------------// Assume the Test String is ABhelloCD. The test string is hello.
+                                                                                  // in strings, index is at 1.
+                                                                                  // so, if offset is 4, then we start at lloCD, it is still long enough
+                                                                                  // to fit hello
+                                                                                  // length of ABhelloCD = 9.
+                                                                                  // 9 - 5 = 4
+                                                                                  // offset can be max length(teststring) - length(pattern)
+    begin
+      history        := history + Chr(10) + 'WR-EX-0001 : Warning : After offset not sufficient length remains. No match is possible.';
+      Exit;
+    end;
+
+    fnd              := True;
+
+    if offset < 0 then
+    begin
+      hasError     := True;
+      Error        := 'ER-GN-0002 : offset can''t be less than 0, at : ' + inst^.rawCode;
+      Exit;
+    end;
+
+    if range > Length(Target) - offset then
+    begin
+      history        := history + Chr(10) + 'Range is larger than the remaining length of Test String ''' + target + ''' resetting.';
+      range          := Length(Target) - offset ;
+    end;
+
+    if offset > Length(target) - fence  then
+    begin
+      hasError     := True;
+      Error        := 'ER-GN-0006 : offset is beyond Fence : ' + inst^.rawCode;
+      Exit;
+    end;
+
+
+
+
+    fnd              := True;
+
+    for i := 1 + offset to range -  Length(inst^.pattern) + 1 do //---------------// add offset and use range algorithm
+    begin
+      fnd            := True;
+      for j := 1 to Length(inst^.pattern) do
+      begin
+        fnd          := fnd and (target[i+j-1] = inst^.pattern[j]);
+        if not fnd then break;
+      end;
+      if fnd then Break;
+    end;
+
+    status           := fnd;
+
+    if status then
+    begin
+      match          := inst^.pattern;
+      location       := i;
+
+      if hasCount then
+      begin
+        hasError     := True;
+        Error        := 'ER-GN-0000 : count isn''t supported by Exact Match';
+        Exit;
+      end;
+
+      if hasCondition then
+      begin
+        hasError     := True;
+        Error        := 'ER-GN-0001 : condition isn''t supported by Exact Match';
+        Exit;
+      end;
+
+    end;
+
+    Exit;
+
+  end;
+
 
 
   hasError           := True;
-  Error              := 'ER-PR-0001 : EXACT Parsing failed, because generic command combination is wrong' ;
+  Error              := 'ER-GN-0100 : EXACT Parsing failed, because generic command combination is wrong' ;
 
 end;
 
