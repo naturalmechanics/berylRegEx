@@ -406,12 +406,23 @@
   <with|color|blue|OFFSET> is given as \ <with|color|blue|2>. In this
   example, the regEx engine will simply ignore the first <with|color|blue|2>
   characters. Therefore, the Test String in this example appears as
-  <with|color|blue|oBarBaz> to the matching algorithm. <with|color|dark
-  green|If offset is not specified, then it is assumed to be>
-  <with|color|blue|0>. <with|color|dark green|If offset is equal or goes
-  beyond length of Test String - length of Search String, then no search is
-  performed. However, no error is thrown. In the current implementation, only
-  a warning is shown. If offset is negative, an error is thrown.>
+  <with|color|blue|oBarBaz> to the matching algorithm.\ 
+
+  \;
+
+  <with|color|dark green|If offset is not specified, then it is assumed to
+  be> <with|color|blue|0>.
+
+  \;
+
+  <with|color|dark green|If offset is equal or goes beyond length of Test
+  String minus length of Search String, then no search is performed. However,
+  no error is thrown. In the current implementation, only a warning is shown.
+  >
+
+  \;
+
+  <with|color|dark green|If offset is negative, an error is thrown.>
 
   \;
 
@@ -456,11 +467,22 @@
   <with|color|blue|o> of the Test String, and looks at no further than
   <with|color|blue|2> characters after that. Thus the total examined part of
   the Test String here is <with|color|blue|oB>. Of course, this leads to a
-  match failure. <with|color|dark green|If range is not specified, then it is
-  assumed to be the whole length of the Test String. If range is negative, or
-  less than the length of the Search String, an error is thrown in the
-  current implementation. If range goes beyond the length of the test string,
-  then it is reduced to the length of the test string.>
+  match failure.\ 
+
+  \;
+
+  <with|color|dark green|If Range is not specified, then it is assumed to be
+  the whole length of the Test String.>
+
+  \;
+
+  <with|color|dark green|If Range is negative, or less than the length of the
+  Search String, an error is thrown in the current implementation. >
+
+  \;
+
+  <with|color|dark green|If Range goes beyond the length of the Test String,
+  then it is reduced to the length of the Test String. No error is thrown.>\ 
 
   \;
 
@@ -500,10 +522,22 @@
   \;
 
   Here, the algorithm will see <with|color|blue|FooBarB> as the Test String.
-  \ <with|color|dark green|If fence is negative, an error is thrown. If fence
-  is equal or larger than the length of the Search String, no error is thrown
-  in the current implementation. A warning is generated, that no match is
-  possible.>
+  \ 
+
+  \;
+
+  <with|color|dark green|If Fence is not specified, it is assumed to be
+  <with|color|blue|0>.>
+
+  \;
+
+  <with|color|dark green|If fence is negative, an error is thrown.>
+
+  \;
+
+  <with|color|dark green|If fence is equal or larger than the length of the
+  Search String, no error is thrown in the current implementation. A warning
+  is generated, that no match is possible.>
 
   \;
 
@@ -543,6 +577,10 @@
   \;
 
   Here, the algorithm will see <with|color|blue|BarB> as the Test String.
+
+  \;
+
+  Retreat behaves very similarly to Range, but in the opposite direction.\ 
 
   \;
 
@@ -587,6 +625,10 @@
   Index <with|color|blue|4> of the Test String is <with|color|blue|arBaz>.
   The match thus fails. <with|color|dark green|Indexing starts at>
   <with|color|blue|0> with Anchors.\ 
+
+  \;
+
+  \;
 
   Anchor command can be specified with a negative argument, then the
   algorithm starts at a position counting from the end of the Test String,
@@ -643,15 +685,27 @@
   \;
 
   <\itemize-minus>
-    <item>With Offset and Range both specified, ff range goes beyond the
-    length of the test string - Offset, then it is reduced to the length of
-    the test string - Offset.
+    <item>With Offset and Range both specified, if Range goes beyond the
+    length of the Test String minus Offset, then it is reduced to the length
+    of the Test String minus Offset.
 
-    <item>With Offset, Range, and Fence specified, if Range goes beyond
-    Fence, then Fence gets priority
+    <item>With Offset and Fence pecified, if Offset goes beyond Fence, then
+    an Error is Thrown.
 
-    <item>With Offset, Retreat, and Fence Specified, if Retreat goes beyond
-    Offset, then Offset gets priority
+    <item>With Range and Fence both specified, in the current FreePascal
+    implementation, Range is overwritten if needed, and the Range algorithm
+    is used. (see below)\ 
+
+    <item>If Range does not go beyond Fence, then Fence is ignored. Range is
+    not overwritten.
+
+    <item>If Range goes beyond Fence, then Fence gets priority, regardless of
+    Offset. Range is overwritten with length of the Test String minus Fence,
+    and the Range algorithm is used. This is equivalent to the case if there
+    was no Range specified, but the same value of Fence was given.\ 
+
+    <item>With Offset, and Retreat Specified, if Retreat goes beyond Offset,
+    then Offset gets priority, regardless of Fence.
 
     <item>Every other error leads to an Error condition.
     <with|font-series|bold|This can change in future.>
@@ -4539,7 +4593,7 @@
     <associate|auto-117|<tuple|10.2|59>>
     <associate|auto-12|<tuple|1.2.2.3|8>>
     <associate|auto-13|<tuple|1.2.2.3.1|8>>
-    <associate|auto-14|<tuple|1.2.2.3.2|8>>
+    <associate|auto-14|<tuple|1.2.2.3.2|9>>
     <associate|auto-15|<tuple|1.2.2.3.3|9>>
     <associate|auto-16|<tuple|1.2.2.3.4|9>>
     <associate|auto-17|<tuple|1.2.2.3.5|10>>
