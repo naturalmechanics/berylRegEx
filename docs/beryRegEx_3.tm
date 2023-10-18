@@ -791,7 +791,9 @@
   \<backslash\>]>|<cell|>|<cell|>|<cell|Underscore Symbol :
   \<backslash\>_>|<cell|>|<cell|>|<cell|Hash Symbol :
   \<backslash\>#>|<cell|>|<cell|>|<cell|Exclaimation :
-  \<backslash\>!>>|<row|<cell|Tilda : \<backslash\>~>|<cell|>|<cell|>|<cell|>|<cell|>|<cell|>|<cell|>|<cell|>|<cell|>|<cell|>>>>>
+  \<backslash\>!>>|<row|<cell|Tilda : \<backslash\>~>|<cell|>|<cell|>|<cell|Slash
+  symbol : \<backslash\>/>|<cell|>|<cell|>|<cell|Plus symbol :
+  \<backslash\>+>|<cell|>|<cell|>|<cell|Star symbol : \<backslash\>*>>>>>
 
   \;
 
@@ -2207,7 +2209,7 @@
 
         <space|7em>&\ 
 
-        <space|8em>3 : ES {} {} : (/ -) : \|\| {} \|\|;;\ 
+        <space|8em>3 : ES {} {} : (\<backslash\>/ -) : \|\| {} \|\|;;\ 
 
         <space|7em>&\ 
 
@@ -2252,11 +2254,13 @@
 
   \;
 
-  Here, we see that in the supplied Test String, after the final digit
+  This is called an <with|font-series|bold|ORDERED AND> combination. Here, we
+  see that in the supplied Test String, after the final digit
   (<with|color|blue| 4 >), before the comma, the substring <with|color|blue|
   HELLO >appears. However, the regEx handler expects in item<with|color|blue|
-  5 >a digit, and a comma immediately after that in item<with|color|blue| 6>.
-  This is not satisfied by the Test String. Hence the match fails.\ 
+  5 >a digit, then a whitespace, and a comma immediately after that in
+  item<with|color|blue| 7>. This is not satisfied by the Test String. Hence
+  the match fails.\ 
 
   \;
 
@@ -2279,7 +2283,8 @@
   - which also must appear at Anchor <with|color|blue|0>. <with|color|dark
   green|In general, the anchor of the first item to match can be anywhere,
   but after the first match, the Anchor of every subsequent item in the
-  truncated Test String must be> <with|color|blue|0>.\ 
+  truncated Test String must be> <with|color|blue|0><with|color|dark green|.
+  An overlap between matched item is not possible by design.>\ 
 
   <subsection|Matching Every Item without a specified order>
 
@@ -2330,10 +2335,11 @@
     </with>
   </verse>
 
-  Here we see that both items are matched, but they do not appear in the Test
-  String in the order as specifed by the regEx handler. <with|color|dark
-  green|In this case, however, the matches must be two distinct substring of
-  the Test String.> Otherwise, a failure will occur. Example:\ 
+  This is called an <with|font-series|bold|AND> combination. Here we see that
+  both items are matched, but they do not appear in the Test String in the
+  order as specifed by the regEx handler. <with|color|dark green|In this
+  case, however, the matches must be two distinct substring of the Test
+  String without overlaps.> Otherwise, a failure will occur. Example:\ 
 
   \;
 
@@ -2375,13 +2381,11 @@
   <with|color|blue|N> is an overlap. Here, the algorithm encounters a
   failure.
 
-  <subsection|Matching any of the supplied Search Strings>
+  <subsection|Matching Every Item without a specified order with overlaps>
 
-  \;
-
-  If instead all the commands of the regEx handler was enclosed in a pair of
-  round parentheses, then only one need to be matched. The algorithm stops
-  after encountering the first successful match. Example:\ 
+  In case of an <with|font-series|bold|AND> combination without order, a
+  overlap may be necessary. To do that, we must use the plus
+  (<with|color|blue|+>) symbol between elements. Example:\ 
 
   \;
 
@@ -2397,11 +2401,157 @@
 
       <space|5em>{
 
-      <space|8em>1 : EX {} {} : OH : \|\| {} \|\|;;\ 
+      <space|8em>1 : EX {} {} : NO : \|\| {} \|\|;;\ 
+
+      <space|7em>+
 
       <space|8em>2 : EX {} {} : CN : \|\| {} \|\|;;\ 
 
       <space|5em>}
+
+      <space|7em>\<backslash\>
+
+      <space|6em>);
+
+      \;
+
+      <space|4.5em>M1:= regExObj1.match_againstTestString(testString1);
+
+      <space|4em>
+
+      assert(M1.status = True);
+
+      assert(M1.results[1] = \PNO\Q);
+
+      assert(M1.results[2] = \PCN\Q);
+
+      \;
+    </with>
+  </with>
+
+  Here, <with|color|blue|CN> and <with|color|blue|NO> are not distinct. The
+  <with|color|blue|N> is an overlap. But the algorithm succeeded.
+
+  <subsection|Matching Every Item with a specified order with overlaps>
+
+  In case of an <with|font-series|bold|ORDERED AND> combination without
+  order, a overlap may be necessary. To do that, we must use the plus
+  (<with|color|blue|*>) symbol between elements. Example:\ 
+
+  \;
+
+  <\with|font-family|tt>
+    <\with|color|blue>
+      testString1:= \PC6H4CNO\Q;
+
+      \;
+
+      \ regExObj1 := new regExHandler(
+
+      <space|7em>\<backslash\>
+
+      <space|5em>{
+
+      <space|8em>1 : EX {} {} : CN : \|\| {} \|\|;;\ 
+
+      <space|7em>*
+
+      <space|8em>2 : EX {} {} : NO : \|\| {} \|\|;;\ 
+
+      <space|5em>}
+
+      <space|7em>\<backslash\>
+
+      <space|6em>);
+
+      \;
+
+      <space|4.5em>M1:= regExObj1.match_againstTestString(testString1);
+
+      <space|4em>
+
+      assert(M1.status = True);
+
+      assert(M1.results[1] = \PCN\Q);
+
+      assert(M1.results[2] = \PNO\Q);
+
+      \;
+    </with>
+  </with>
+
+  \;
+
+  Again, <with|color|blue|CN> and <with|color|blue|NO> are not distinct. The
+  <with|color|blue|N> is an overlap. But the algorithm succeeded. But, if we
+  used the following example, this would have failed:\ 
+
+  \;
+
+  <\with|font-family|tt>
+    <\with|color|blue>
+      testString1:= \PC6H4CNO\Q;
+
+      \;
+
+      \ regExObj1 := new regExHandler(
+
+      <space|7em>\<backslash\>
+
+      <space|5em>{
+
+      <space|8em>1 : EX {} {} : NO : \|\| {} \|\|;;\ 
+
+      <space|7em>*
+
+      <space|8em>2 : EX {} {} : CN : \|\| {} \|\|;;\ 
+
+      <space|5em>}
+
+      <space|7em>\<backslash\>
+
+      <space|6em>);
+
+      \;
+
+      <space|4.5em>M1:= regExObj1.match_againstTestString(testString1);
+
+      <space|4em>
+
+      assert(M1.status = False);
+
+      \;
+    </with>
+  </with>
+
+  <subsection|Matching any of the supplied Search Strings>
+
+  \;
+
+  If instead all the commands of the regEx handler was enclosed in a pair of
+  round parentheses, then only one need to be matched. The algorithm stops
+  after encountering the first successful match. This is called an
+  <with|font-series|bold|OR> combination. Example:\ 
+
+  \;
+
+  <\with|font-family|tt>
+    <\with|color|blue>
+      testString1:= \PC6H4CNO\Q;
+
+      \;
+
+      \ regExObj1 := new regExHandler(
+
+      <space|7em>\<backslash\>
+
+      <space|5em>(
+
+      <space|8em>1 : EX {} {} : OH : \|\| {} \|\|;;\ 
+
+      <space|8em>2 : EX {} {} : CN : \|\| {} \|\|;;\ 
+
+      <space|5em>)
 
       <space|7em>\<backslash\>
 
@@ -2421,6 +2571,8 @@
     </with>
   </with>
 
+  \;
+
   Here, <with|color|blue|CN>, corresponding to the second command, is a
   succesful match. The reference of the command leading to a successful
   match, namely <with|color|blue|2>, is reflected in the index of
@@ -2437,8 +2589,9 @@
 
   \;
 
-  By enclosing the entire list of commands in double round parentheses, we
-  achieve the goal of as many matches as possible. Example:\ 
+  By enclosing the entire list of commands in round parentheses and using the
+  slash (<with|color|blue|/>) symbol between them, we achieve the goal of as
+  many matches as possible. Example:\ 
 
   \;
 
@@ -2452,17 +2605,21 @@
 
       <space|7em>\<backslash\>
 
-      <space|5em>((
+      <space|5em>(
 
       <space|8em>1 : EX {} {OFFSET 4; RANGE 4;} : CN : \|\| {} \|\|;;\ 
 
+      <space|7em>/
+
       <space|8em>2 : EX {} {OFFSET 2; RANGE 3;} : CH5 : \|\| {} \|\|;;\ 
+
+      <space|7em>/
 
       <space|8em>3 : EX {} {OFFSET 2; RANGE 3;} : OH : \|\| {} \|\|;;\ 
 
       \;
 
-      <space|5em>))
+      <space|5em>)
 
       <space|7em>\<backslash\>
 
@@ -2495,6 +2652,78 @@
   otherwise. The total number of successful match is given by the matchCount
   variable (here there are> <with|color|blue|2> <with|color|dark
   green|successful matches).>
+
+  \;
+
+  This syntax is not needed for ensemble matches, because the effect can be
+  achieved also using ENCORE MATCHES which will be described later.
+
+  <subsection|Matching EXACTLY one item>
+
+  An <with|font-series|bold|OR> combination, as stated, stops after the first
+  successful match. Other items may be a successful match. But, we may want
+  to enforce that <with|font-shape|italic|more than one successful match will
+  lead to a failure>. This may be emulated with all possible combinations of
+  one item match and other negative match instructions - which will become
+  very complex, with incrreasing number of items. For this, we consider the
+  <with|font-series|bold|XOR> combination. To perform such an operation,
+  again adjustment is necessary.\ 
+
+  \;
+
+  By enclosing the entire list of commands in double round parentheses, we
+  achieve the goal of as many matches as possible. Example:\ 
+
+  \;
+
+  <\with|font-family|tt>
+    <\with|color|blue>
+      testString1:= \PC6H4CNNH2OH\Q;
+
+      \;
+
+      \ regExObj1 := new regExHandler(
+
+      <space|7em>\<backslash\>
+
+      <space|5em>(
+
+      <space|8em>1 : EX {} {OFFSET 4; RANGE 4;} : CN : \|\| {} \|\|;;\ 
+
+      <space|7em>~
+
+      <space|8em>2 : EX {} {OFFSET 2; RANGE 3;} : CH5 : \|\| {} \|\|;;\ 
+
+      <space|7em>~
+
+      <space|8em>3 : EX {} {OFFSET 2; RANGE 3;} : OH : \|\| {} \|\|;;\ 
+
+      \;
+
+      <space|5em>)
+
+      <space|7em>\<backslash\>
+
+      <space|6em>);
+
+      \;
+
+      <space|4.5em>M1:= regExObj1.match_againstTestString(testString1);
+
+      <space|4em>
+
+      assert(M1.status = FALSE);
+
+      \;
+    </with>
+  </with>
+
+  \;
+
+  <with|color|dark green|The tilda (<with|color|blue|~>) indicates the
+  <with|font-series|bold|XOR> combination. The status will be set to True if
+  exactly> <with|color|blue|1><with|color|dark green| item is matched, and
+  false otherwise.>
 
   \;
 
@@ -3298,8 +3527,10 @@
   </verse>
 
   Generally the dependent block needs to be enclosed a pair of braces
-  <with|color|blue|{}> even if there is a single insstruction. The repeat
-  instruction, if a single one, may be kept without braces.
+  <with|color|blue|{}> even if there is a single insstruction. For
+  <with|font-series|bold|OR> or <with|font-series|bold|XOR> combinations they
+  may be enclosed in a pair of round parentheses <with|color|blue|()>. The
+  condition instruction, if a single one, may be kept without braces.
 
   <subsection|IF block>\ 
 
@@ -3930,8 +4161,10 @@
   \;
 
   Generally the dependent block needs to be enclosed a pair of braces
-  <with|color|blue|{}> even if there is a single insstruction. The repeat
-  instruction, if a single one, may be kept without braces.
+  <with|color|blue|{}> even if there is a single insstruction. For
+  <with|font-series|bold|OR> or <with|font-series|bold|XOR> combinations they
+  may be enclosed in a pair of round parentheses <with|color|blue|()>. The
+  repeat instruction, if a single one, may be kept without braces.
 
   <subsection|Repeating Times>
 
@@ -4067,11 +4300,11 @@
 
       <space|11em>REPEAT (2 4 6);
 
-      <space|10em>}}
+      <space|11em>{
 
-      <space|10em>{{
+      <space|12em>11 : EX {} {} : NH : \|\| {} \|\|;;
 
-      <space|11em>11 : EX {} {} : NH : \|\| {} \|\|;;
+      <space|11em>}
 
       <space|10em>}}
 
@@ -4105,13 +4338,21 @@
   this case must be <with|color|blue|2> or <with|color|blue|4> or
   <with|color|blue|6>. In this case, the maximum number is
   <with|color|blue|4>, and match succeeds. If the number of match was
-  <with|color|blue|3>, it would have failed.
+  <with|color|blue|3>, it would have failed because <with|color|blue|3> is
+  not in the list. Wecould also have had supplied <with|color|blue|(2, 3+ 6)>
+  as possible values. The first number above 3 that corresponds to the actual
+  number of matches would have led to a success. <with|color|dark green|Note
+  that here, the actual number of matches must correspond to at least one of
+  the items in the list.> It is also possible to modify the list with the
+  same <with|font-series|bold|AND>, <with|font-series|bold|XOR>, etc
+  combinations as described above.
 
   <subsubsection|Unknown Number of times>
 
   In normal PCRE, the asterisk symbol (<with|color|blue|*>) is used to denote
   a repeatation of any number of times, including zero. We can use
-  <with|color|blue|0+> for the same effect.
+  <with|color|blue|0+> for the same effect. This will continue to match as
+  long as possible.
 
   \;
 
@@ -4138,13 +4379,13 @@
 
       <space|10em>{{
 
-      <space|11em>REPEAT 2+ [ _count ];
+      <space|12em>REPEAT 2+ [ _count ];
 
-      <space|10em>}}
+      <space|11em>{
 
-      <space|10em>{{
+      <space|12em>11 : EX {} {} : NH : \|\| {} \|\|;;
 
-      <space|11em>11 : EX {} {} : NH : \|\| {} \|\|;;
+      <space|11em>}
 
       <space|10em>}}
 
@@ -4209,11 +4450,11 @@
 
       <space|11em>REPEAT 2+ [ _count ];
 
-      <space|10em>}}
+      <space|11em>{
 
-      <space|10em>{{
+      <space|12em>11 : EX {} {} : NH : \|\| {} \|\|;;
 
-      <space|11em>11 : EX {} {} : NH : \|\| {} \|\|;;
+      <space|11em>}
 
       <space|10em>}}
 
@@ -4298,11 +4539,11 @@
 
       <space|11em>REPEAT 0;
 
-      <space|10em>}}
+      <space|11em>{
 
-      <space|10em>{{
+      <space|12em>11 : EX {} {} : OS : \|\| {} \|\|;;
 
-      <space|11em>11 : EX {} {} : OS : \|\| {} \|\|;;
+      <space|11em>}
 
       <space|10em>}}
 
@@ -4335,7 +4576,179 @@
   <with|color|blue|OFFSET>, <with|color|blue|RANGE>, and such similar general
   commands.\ 
 
+  <section|Repeat based on Condition>
+
+  Sometimes, we want that the match is repeated <with|font-shape|italic|while
+  a condition is true or until a condition becomes true>. In those cases, a
+  <with|color|dark green|WHILE, resp. UNTIL Match> is needed.
+  <with|color|dark green|These are found by replacing the REPEAT command by
+  WHILE resp UNTIL keywords.>\ 
+
+  <subsection|ER MATCH with WHILE>
+
+  <with|color|blue|WHILE> is used to run the <with|font-series|bold|ER Match>
+  as long as a condition is true. Example:\ 
+
   \;
+
+  <\with|font-family|tt>
+    <\with|color|blue>
+      testString1:= \PC6H4CNCNCNCNCNCN\Q;
+
+      \;
+
+      \ regExObj1 := new regExHandler(
+
+      <space|7em>\<backslash\>
+
+      <space|5em>{
+
+      <space|8em>1 : EY : NULL : \|\| { #cnt := 0; #cnd := (#cnt\<less\>3);}
+      \|\|;;
+
+      <space|7em>&
+
+      <space|8em>2 : ER {} {} :\ 
+
+      <space|10em>{{
+
+      <space|11em>WHILE cnd [ _count ];
+
+      <space|11em>{
+
+      <space|12em>11 : EX {} {} : CN : \|\| {
+
+      <space|26em>#cnt := #cnt + 1;\ 
+
+      <space|26em>#cnd := (#cnt\<less\>3);
+
+      <space|23em>} \|\|;;
+
+      <space|11em>}
+
+      <space|10em>}}
+
+      <space|9em>: \|\| {} \|\|;;\ 
+
+      <space|5em>}
+
+      <space|7em>\<backslash\>
+
+      <space|6em>);
+
+      \;
+
+      <space|4.5em>M1:= regExObj1.match_againstTestString(testString1);
+
+      <space|4em>
+
+      assert(M1.status = True);
+
+      assert(M1.results[2][1][11] = \PCN\Q);
+
+      assert(M1.results[2][2][11] = \PCN\Q);
+    </with>
+  </with>
+
+  \;
+
+  Here, we want to match the pattern <with|color|blue|CN> as long as the
+  count remains less that three. This set of commands succeeds. This
+  particular example could have been performed by a strict
+  <with|color|blue|REPEAT> till <with|color|blue|2>, as the value
+  <with|color|blue|3> is known in advance. But sometimes it's not - and in
+  such cases, <with|color|blue|WHILE> is useful. The
+  <with|font-series|bold|EY> is an <with|font-series|bold|EMPTY MATCH>, used
+  to execute some code before the actual match begins. This will be discussed
+  later.
+
+  \;
+
+  <subsection|ER MATCH with UNTIL>
+
+  <with|color|blue|UNTIL> is the opposite of <with|color|blue|WHILE> - as
+  long as the condition is False. <with|font-series|bold|TBD>.
+
+  <section|Prematurely stopping an ER MATCH>
+
+  An <with|font-series|bold|ER MATCH> is supposed to run as the
+  <with|font-series|bold|REPEAT>, <with|font-series|bold|WHILE>, or
+  <with|font-series|bold|UNTIL> declarations dictate. However, if it is
+  necessary to stop the repeating loop before the stop condition is
+  encountered. For that, a <with|color|blue|BREAK> instruction or a
+  <with|color|blue|FAIL> instruction may be supplied in another
+  <with|font-series|bold|EY MATCH>. Example:
+
+  \;
+
+  <\with|font-family|tt>
+    <\with|color|blue>
+      testString1:= \PC6H4CNCNCNCNCNCN\Q;
+
+      \;
+
+      \ regExObj1 := new regExHandler(
+
+      <space|7em>\<backslash\>
+
+      <space|5em>{
+
+      <space|8em>1 : EY : NULL : \|\| { #cnt := 0; } \|\|;;
+
+      <space|7em>&
+
+      <space|8em>2 : ER {} {} :\ 
+
+      <space|10em>{{
+
+      <space|11em>REPEAT 6;
+
+      <space|11em>{
+
+      <space|12em>11 : EX {} {} : CN : \|\| #cnt := #cnt +1; \|\|;;
+
+      <space|12em>00 : EY : NULL : \|\| if(#cnt \<gtr\> 2) {BREAK;} \|\| ;;
+
+      <space|11em>}
+
+      <space|10em>}}
+
+      <space|9em>: \|\| {} \|\|;;\ 
+
+      <space|5em>}
+
+      <space|7em>\<backslash\>
+
+      <space|6em>);
+
+      \;
+
+      <space|4.5em>M1:= regExObj1.match_againstTestString(testString1);
+
+      <space|4em>
+
+      assert(M1.status = True);
+
+      assert(M1.results[2][1][11] = \PCN\Q);
+
+      assert(M1.results[2][2][11] = \PCN\Q);
+
+      assert(M1.results[2][3][11] = \PCN\Q);
+    </with>
+  </with>
+
+  \;
+
+  Although planned to run for <with|color|blue|6> times, the loop ends after
+  <with|color|blue|3> times. <with|color|dark green|The match just before the
+  <with|color|blue|BREAK> command executes is included in the
+  <with|color|blue|RESULT>.>
+
+  \;
+
+  If we were to use a <with|color|blue|FAIL> instruction instead of a
+  <with|color|blue|BREAK> instruction, the same example would have lead to
+  the <with|color|blue|status> being <with|color|blue|FALSE>.
 
   <section|Type specific and General Commands>
 
@@ -4471,7 +4884,7 @@
   variable is reassigned with a new value, its type is also reset. However,
   type coercion is not implemented.\ 
 
-  <subsection|Accessign Variables after regExHandler is executed>
+  <subsection|Accessing Variables after regExHandler is executed>
 
   Variables may be accessed through the <with|color|blue|namespace> element
   of the match object, or via the created namespace. Example:\ 
@@ -4503,6 +4916,8 @@
       <space|7em>\<backslash\>
 
       <space|6em>);
+
+      <space|4.5em>M1:= regExObj1.match_againstTestString(testString1);
 
       \ regExObj2 := new regExHandler(
 
@@ -4569,6 +4984,88 @@
 
   \;
 
+  <subsection|Modifying the regEx Result via code>
+
+  We have already seen, that the usee of <with|color|blue|FAIL> keyword can
+  force the status to be False. In general we can use the
+  <with|color|blue|SET> command to set values in the output. For example:\ 
+
+  \;
+
+  <\with|font-family|tt>
+    <\with|color|blue>
+      testString1:= \PC6H4CNNH2OH\Q;
+
+      \ regExNS1<space|1em>:= new regExNamespace();
+
+      \ regExObj1 := new regExHandler(
+
+      <space|7em>\<backslash\>
+
+      <space|5em>{
+
+      <space|8em>1 : EX {} {} : CN @pos : \|\| {push #pos regExNS1;} \|\|;;
+
+      <space|7em>&
+
+      <space|8em>2 : EX {} {} : NH : \|\| {} \|\|;;
+
+      <space|10em>
+
+      <space|5em>}
+
+      <space|7em>\<backslash\>
+
+      <space|6em>);
+
+      <space|4.5em>M1:= regExObj1.match_againstTestString(testString1);
+
+      \ regExObj2 := new regExHandler(
+
+      <space|7em>\<backslash\>
+
+      <space|5em>{
+
+      <space|8em>0 : EY {} {} : NULL : \|\| { #pos := pull regExNS1 pos;}
+      \|\|;;
+
+      <space|8em>1 : EX {} {OFFSET #pos;} : OH @pos_in_second_regEx:\ 
+
+      <space|9em>\|\| {
+
+      <space|10em>SET status False;
+
+      <space|10em>SET foo \Pbar\Q;
+
+      <space|9em>} \|\|;;
+
+      <space|10em>
+
+      <space|5em>}
+
+      <space|7em>\<backslash\>
+
+      <space|6em>);
+
+      \;
+
+      <space|4.5em>M2:= regExObj2.match_againstTestString(testString1);
+
+      <space|4em>
+
+      assert(M2.status = False);
+
+      assert(M2.foo = \Pbar\Q);
+    </with>
+  </with>
+
+  \;
+
+  Even though the match succeeded here, we have overwritten the status using
+  the <with|color|blue|SET> keyword. Similarly, we can also supply other
+  parameters in the result and corresponding values, as done in
+  <with|color|blue|SET foo \Pbar\Q>.
+
   <section|Scripts>
 
   \;
@@ -4588,26 +5085,34 @@
   <\collection>
     <associate|auto-1|<tuple|1|5>>
     <associate|auto-10|<tuple|1.2.2.1|7>>
-    <associate|auto-100|<tuple|9.1.1|52>>
-    <associate|auto-101|<tuple|9.1.1.1|52>>
-    <associate|auto-102|<tuple|9.1.1.2|52>>
-    <associate|auto-103|<tuple|9.1.1.3|53>>
-    <associate|auto-104|<tuple|9.1.1.4|53>>
-    <associate|auto-105|<tuple|9.1.1.5|53>>
-    <associate|auto-106|<tuple|9.1.1.6|54>>
-    <associate|auto-107|<tuple|9.1.2|54>>
-    <associate|auto-108|<tuple|9.2|54>>
-    <associate|auto-109|<tuple|9.3|55>>
+    <associate|auto-100|<tuple|8.3|51>>
+    <associate|auto-101|<tuple|9|53>>
+    <associate|auto-102|<tuple|9.1|53>>
+    <associate|auto-103|<tuple|9.1.1|54>>
+    <associate|auto-104|<tuple|9.1.1.1|54>>
+    <associate|auto-105|<tuple|9.1.1.2|54>>
+    <associate|auto-106|<tuple|9.1.1.3|55>>
+    <associate|auto-107|<tuple|9.1.1.4|55>>
+    <associate|auto-108|<tuple|9.1.1.5|55>>
+    <associate|auto-109|<tuple|9.1.1.6|56>>
     <associate|auto-11|<tuple|1.2.2.2|8>>
-    <associate|auto-110|<tuple|9.4|56>>
-    <associate|auto-111|<tuple|10|57>>
-    <associate|auto-112|<tuple|10.1|57>>
-    <associate|auto-113|<tuple|10.1.1|57>>
-    <associate|auto-114|<tuple|10.1.2|58>>
-    <associate|auto-115|<tuple|10.1.3|58>>
-    <associate|auto-116|<tuple|10.1.4|58>>
-    <associate|auto-117|<tuple|10.2|59>>
+    <associate|auto-110|<tuple|9.1.2|56>>
+    <associate|auto-111|<tuple|9.2|56>>
+    <associate|auto-112|<tuple|9.3|57>>
+    <associate|auto-113|<tuple|9.4|58>>
+    <associate|auto-114|<tuple|9.4.1|58>>
+    <associate|auto-115|<tuple|9.4.2|59>>
+    <associate|auto-116|<tuple|9.5|59>>
+    <associate|auto-117|<tuple|9.6|59>>
+    <associate|auto-118|<tuple|10|61>>
+    <associate|auto-119|<tuple|10.1|61>>
     <associate|auto-12|<tuple|1.2.2.3|8>>
+    <associate|auto-120|<tuple|10.1.1|61>>
+    <associate|auto-121|<tuple|10.1.2|62>>
+    <associate|auto-122|<tuple|10.1.3|62>>
+    <associate|auto-123|<tuple|10.1.4|62>>
+    <associate|auto-124|<tuple|10.1.5|63>>
+    <associate|auto-125|<tuple|10.2|63>>
     <associate|auto-13|<tuple|1.2.2.3.1|8>>
     <associate|auto-14|<tuple|1.2.2.3.2|9>>
     <associate|auto-15|<tuple|1.2.2.3.3|9>>
@@ -4668,41 +5173,41 @@
     <associate|auto-65|<tuple|7.2.2|33>>
     <associate|auto-66|<tuple|7.2.3|34>>
     <associate|auto-67|<tuple|7.2.4|35>>
-    <associate|auto-68|<tuple|7.3|35>>
-    <associate|auto-69|<tuple|7.3.1|35>>
+    <associate|auto-68|<tuple|7.2.5|35>>
+    <associate|auto-69|<tuple|7.2.6|36>>
     <associate|auto-7|<tuple|1.2|7>>
-    <associate|auto-70|<tuple|7.3.1.1|35>>
-    <associate|auto-71|<tuple|7.3.1.1.1|35>>
-    <associate|auto-72|<tuple|7.3.1.1.2|36>>
-    <associate|auto-73|<tuple|7.3.1.1.3|37>>
-    <associate|auto-74|<tuple|7.3.1.2|37>>
-    <associate|auto-75|<tuple|7.3.1.2.1|38>>
-    <associate|auto-76|<tuple|7.3.1.2.2|38>>
-    <associate|auto-77|<tuple|7.3.2|38>>
-    <associate|auto-78|<tuple|7.3.3|38>>
-    <associate|auto-79|<tuple|7.4|38>>
+    <associate|auto-70|<tuple|7.2.7|37>>
+    <associate|auto-71|<tuple|7.3|37>>
+    <associate|auto-72|<tuple|7.3.1|37>>
+    <associate|auto-73|<tuple|7.3.1.1|37>>
+    <associate|auto-74|<tuple|7.3.1.1.1|37>>
+    <associate|auto-75|<tuple|7.3.1.1.2|38>>
+    <associate|auto-76|<tuple|7.3.1.1.3|39>>
+    <associate|auto-77|<tuple|7.3.1.2|39>>
+    <associate|auto-78|<tuple|7.3.1.2.1|39>>
+    <associate|auto-79|<tuple|7.3.1.2.2|40>>
     <associate|auto-8|<tuple|1.2.1|7>>
-    <associate|auto-80|<tuple|7.4.1|39>>
-    <associate|auto-81|<tuple|7.4.2|39>>
-    <associate|auto-82|<tuple|7.4.3|40>>
-    <associate|auto-83|<tuple|7.5|40>>
-    <associate|auto-84|<tuple|8|43>>
-    <associate|auto-85|<tuple|8.1|44>>
-    <associate|auto-86|<tuple|8.1.1|44>>
-    <associate|auto-87|<tuple|8.1.1.1|44>>
-    <associate|auto-88|<tuple|8.1.1.2|45>>
-    <associate|auto-89|<tuple|8.1.1.3|45>>
+    <associate|auto-80|<tuple|7.3.2|40>>
+    <associate|auto-81|<tuple|7.3.3|40>>
+    <associate|auto-82|<tuple|7.4|40>>
+    <associate|auto-83|<tuple|7.4.1|41>>
+    <associate|auto-84|<tuple|7.4.2|41>>
+    <associate|auto-85|<tuple|7.4.3|42>>
+    <associate|auto-86|<tuple|7.5|42>>
+    <associate|auto-87|<tuple|8|45>>
+    <associate|auto-88|<tuple|8.1|46>>
+    <associate|auto-89|<tuple|8.1.1|46>>
     <associate|auto-9|<tuple|1.2.2|7>>
-    <associate|auto-90|<tuple|8.1.1.4|45>>
-    <associate|auto-91|<tuple|8.1.2|46>>
-    <associate|auto-92|<tuple|8.1.3|46>>
-    <associate|auto-93|<tuple|8.1.3.1|46>>
-    <associate|auto-94|<tuple|8.1.3.2|46>>
-    <associate|auto-95|<tuple|8.1.4|47>>
-    <associate|auto-96|<tuple|8.2|48>>
-    <associate|auto-97|<tuple|8.3|49>>
-    <associate|auto-98|<tuple|9|51>>
-    <associate|auto-99|<tuple|9.1|51>>
+    <associate|auto-90|<tuple|8.1.1.1|46>>
+    <associate|auto-91|<tuple|8.1.1.2|47>>
+    <associate|auto-92|<tuple|8.1.1.3|47>>
+    <associate|auto-93|<tuple|8.1.1.4|47>>
+    <associate|auto-94|<tuple|8.1.2|48>>
+    <associate|auto-95|<tuple|8.1.3|48>>
+    <associate|auto-96|<tuple|8.1.3.1|48>>
+    <associate|auto-97|<tuple|8.1.3.2|48>>
+    <associate|auto-98|<tuple|8.1.4|49>>
+    <associate|auto-99|<tuple|8.2|50>>
   </collection>
 </references>
 
@@ -4960,207 +5465,240 @@
       without a specified order <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-65>>
 
-      <with|par-left|<quote|1tab>|7.2.3.<space|2spc>Matching any of the
-      supplied Search Strings <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <with|par-left|<quote|1tab>|7.2.3.<space|2spc>Matching Every Item
+      without a specified order with overlaps
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-66>>
 
-      <with|par-left|<quote|1tab>|7.2.4.<space|2spc>Matching as many items as
-      possible <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <with|par-left|<quote|1tab>|7.2.4.<space|2spc>Matching Every Item with
+      a specified order with overlaps <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-67>>
 
-      7.3.<space|2spc>Search Space <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-68>
+      <with|par-left|<quote|1tab>|7.2.5.<space|2spc>Matching any of the
+      supplied Search Strings <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-68>>
 
-      <with|par-left|<quote|1tab>|7.3.1.<space|2spc>RANGE and OFFSET
-      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <with|par-left|<quote|1tab>|7.2.6.<space|2spc>Matching as many items as
+      possible <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-69>>
 
-      <with|par-left|<quote|2tab>|7.3.1.1.<space|2spc>OFFSET
+      <with|par-left|<quote|1tab>|7.2.7.<space|2spc>Matching EXACTLY one item
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-70>>
 
+      7.3.<space|2spc>Search Space <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-71>
+
+      <with|par-left|<quote|1tab>|7.3.1.<space|2spc>RANGE and OFFSET
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-72>>
+
+      <with|par-left|<quote|2tab>|7.3.1.1.<space|2spc>OFFSET
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-73>>
+
       <with|par-left|<quote|4tab>|OFFSET with ordered AND combination
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-71><vspace|0.15fn>>
+      <no-break><pageref|auto-74><vspace|0.15fn>>
 
       <with|par-left|<quote|4tab>|OFFSET with unordered AND combination
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-72><vspace|0.15fn>>
+      <no-break><pageref|auto-75><vspace|0.15fn>>
 
       <with|par-left|<quote|4tab>|OFFSET with OR combination
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-73><vspace|0.15fn>>
+      <no-break><pageref|auto-76><vspace|0.15fn>>
 
       <with|par-left|<quote|2tab>|7.3.1.2.<space|2spc>RANGE
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-74>>
+      <no-break><pageref|auto-77>>
 
       <with|par-left|<quote|4tab>|RANGE with ordered AND combination
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-75><vspace|0.15fn>>
+      <no-break><pageref|auto-78><vspace|0.15fn>>
 
       <with|par-left|<quote|4tab>|RANGE with unordered AND combination
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-76><vspace|0.15fn>>
+      <no-break><pageref|auto-79><vspace|0.15fn>>
 
       <with|par-left|<quote|1tab>|7.3.2.<space|2spc>FENCE and RETREAT
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-77>>
+      <no-break><pageref|auto-80>>
 
       <with|par-left|<quote|1tab>|7.3.3.<space|2spc>ANCHOR
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-78>>
+      <no-break><pageref|auto-81>>
 
       7.4.<space|2spc>Combining AND / OR combinations
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-79>
+      <no-break><pageref|auto-82>
 
       <with|par-left|<quote|1tab>|7.4.1.<space|2spc>References
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-80>>
+      <no-break><pageref|auto-83>>
 
       <with|par-left|<quote|1tab>|7.4.2.<space|2spc>Results overview
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-81>>
+      <no-break><pageref|auto-84>>
 
       <with|par-left|<quote|1tab>|7.4.3.<space|2spc>Depth
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-82>>
+      <no-break><pageref|auto-85>>
 
       7.5.<space|2spc>Nesting of Commands
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-83>
+      <no-break><pageref|auto-86>
 
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|font-shape|<quote|small-caps>|8.<space|2spc>ENQUIRY
       MATCHES> <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <pageref|auto-84><vspace|0.5fn>
+      <pageref|auto-87><vspace|0.5fn>
 
       8.1.<space|2spc>IF - ELSEIF - ELSE <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-85>
+      <no-break><pageref|auto-88>
 
       <with|par-left|<quote|1tab>|8.1.1.<space|2spc>IF block
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-86>>
+      <no-break><pageref|auto-89>>
 
       <with|par-left|<quote|2tab>|8.1.1.1.<space|2spc>The condition
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-87>>
+      <no-break><pageref|auto-90>>
 
       <with|par-left|<quote|2tab>|8.1.1.2.<space|2spc>The Test Strings /
       Match Patterns <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-88>>
+      <no-break><pageref|auto-91>>
 
       <with|par-left|<quote|2tab>|8.1.1.3.<space|2spc>Priority of Evaluation
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-89>>
+      <no-break><pageref|auto-92>>
 
       <with|par-left|<quote|2tab>|8.1.1.4.<space|2spc>References
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-90>>
+      <no-break><pageref|auto-93>>
 
       <with|par-left|<quote|1tab>|8.1.2.<space|2spc>ELSE-IF Block and ELSE
       Block <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-91>>
+      <no-break><pageref|auto-94>>
 
       <with|par-left|<quote|1tab>|8.1.3.<space|2spc>Conditions
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-92>>
+      <no-break><pageref|auto-95>>
 
       <with|par-left|<quote|2tab>|8.1.3.1.<space|2spc>Direct Declarations
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-93>>
+      <no-break><pageref|auto-96>>
 
       <with|par-left|<quote|2tab>|8.1.3.2.<space|2spc>Variables
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-94>>
+      <no-break><pageref|auto-97>>
 
       <with|par-left|<quote|1tab>|8.1.4.<space|2spc>Accessing Condition
       Status <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-95>>
+      <no-break><pageref|auto-98>>
 
       8.2.<space|2spc>Look-Forward and Look-Backward
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-96>
+      <no-break><pageref|auto-99>
 
       8.3.<space|2spc>Type Specific Commands
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-97>
+      <no-break><pageref|auto-100>
 
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|font-shape|<quote|small-caps>|9.<space|2spc>ENCORE
       MATCHES> <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <pageref|auto-98><vspace|0.5fn>
+      <pageref|auto-101><vspace|0.5fn>
 
       9.1.<space|2spc>Repeating a Match <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-99>
+      <no-break><pageref|auto-102>
 
       <with|par-left|<quote|1tab>|9.1.1.<space|2spc>Repeating Times
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-100>>
+      <no-break><pageref|auto-103>>
 
       <with|par-left|<quote|2tab>|9.1.1.1.<space|2spc>Exact Number of Times
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-101>>
+      <no-break><pageref|auto-104>>
 
       <with|par-left|<quote|2tab>|9.1.1.2.<space|2spc>At least N Times
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-102>>
+      <no-break><pageref|auto-105>>
 
       <with|par-left|<quote|2tab>|9.1.1.3.<space|2spc>At most N times
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-103>>
+      <no-break><pageref|auto-106>>
 
       <with|par-left|<quote|2tab>|9.1.1.4.<space|2spc>Between M and N times
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-104>>
+      <no-break><pageref|auto-107>>
 
       <with|par-left|<quote|2tab>|9.1.1.5.<space|2spc>Specific discreet
       number of times <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-105>>
+      <no-break><pageref|auto-108>>
 
       <with|par-left|<quote|2tab>|9.1.1.6.<space|2spc>Unknown Number of times
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-106>>
+      <no-break><pageref|auto-109>>
 
       <with|par-left|<quote|1tab>|9.1.2.<space|2spc>Accessing the actual
       number of repeatation <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-107>>
+      <no-break><pageref|auto-110>>
 
       9.2.<space|2spc>The results Variable
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-108>
+      <no-break><pageref|auto-111>
 
       9.3.<space|2spc>Negating a Match <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-109>
-
-      9.4.<space|2spc>Type specific and General Commands
-      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-110>
-
-      <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|font-shape|<quote|small-caps>|10.<space|2spc>SCRIPTING
-      AND VARIABLES> <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <pageref|auto-111><vspace|0.5fn>
-
-      10.1.<space|2spc>Variables <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-112>
 
-      <with|par-left|<quote|1tab>|10.1.1.<space|2spc>Global Namespace
+      9.4.<space|2spc>Repeat based on Condition
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-113>>
+      <no-break><pageref|auto-113>
 
-      <with|par-left|<quote|1tab>|10.1.2.<space|2spc>Empty instructions
+      <with|par-left|<quote|1tab>|9.4.1.<space|2spc>ER MATCH with WHILE
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-114>>
 
-      <with|par-left|<quote|1tab>|10.1.3.<space|2spc>General Syntax
+      <with|par-left|<quote|1tab>|9.4.2.<space|2spc>ER MATCH with UNTIL
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-115>>
 
-      <with|par-left|<quote|1tab>|10.1.4.<space|2spc>Accessign Variables
+      9.5.<space|2spc>Prematurely stopping an ER MATCH
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-116>
+
+      9.6.<space|2spc>Type specific and General Commands
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-117>
+
+      <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|font-shape|<quote|small-caps>|10.<space|2spc>SCRIPTING
+      AND VARIABLES> <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <pageref|auto-118><vspace|0.5fn>
+
+      10.1.<space|2spc>Variables <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-119>
+
+      <with|par-left|<quote|1tab>|10.1.1.<space|2spc>Global Namespace
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-120>>
+
+      <with|par-left|<quote|1tab>|10.1.2.<space|2spc>Empty instructions
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-121>>
+
+      <with|par-left|<quote|1tab>|10.1.3.<space|2spc>General Syntax
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-122>>
+
+      <with|par-left|<quote|1tab>|10.1.4.<space|2spc>Accessing Variables
       after regExHandler is executed <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-116>>
+      <no-break><pageref|auto-123>>
+
+      <with|par-left|<quote|1tab>|10.1.5.<space|2spc>Modifying the regEx
+      Result via code <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-124>>
 
       10.2.<space|2spc>Scripts <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-117>
+      <no-break><pageref|auto-125>
     </associate>
   </collection>
 </auxiliary>
