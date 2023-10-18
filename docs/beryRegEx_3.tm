@@ -3297,6 +3297,10 @@
     </with>
   </verse>
 
+  Generally the dependent block needs to be enclosed a pair of braces
+  <with|color|blue|{}> even if there is a single insstruction. The repeat
+  instruction, if a single one, may be kept without braces.
+
   <subsection|IF block>\ 
 
   The first of these blocks correspond an IF section.\ 
@@ -3312,8 +3316,6 @@
   terminatedwith a semicolon.> Since the conditions are all evaluated to True
   or False, the operations are commutative, and the order does not matter.
   <with|color|dark green|Hence, in here, the ampersand symbol can't be used.>\ 
-
-  \;
 
   In the first example of this chapter, there are some special commands, such
   as <with|color|blue|LOOKFORWARD>. These are just examples, which can be
@@ -3381,15 +3383,19 @@
 
       <space|12em>{{
 
-      <space|9em>LOOKFORWARD OH;
+      <space|13em>{
 
-      <space|12em>}}
+      <space|12em>LOOKFORWARD OH;
 
-      <space|12em>{{
+      <space|13em>}
+
+      <space|13em>{
 
       <space|14em>10 : EX {} {} : C6 \|\| {} \|\| ;;\ 
 
       <space|14em>20 : EX {} {} : H4 \|\| {} \|\| ;;
+
+      <space|13em>}
 
       <space|12em>}}
 
@@ -3528,15 +3534,19 @@
 
       <space|12em>{{
 
-      <space|9em>#importantVar;
+      <space|13em>{
 
-      <space|12em>}}
+      <space|14em>#importantVar;
 
-      <space|12em>{{
+      <space|13em>}
+
+      <space|13em>{
 
       <space|14em>10 : EX {} {} : C6 \|\| {} \|\| ;;\ 
 
       <space|14em>20 : EX {} {} : H4 \|\| {} \|\| ;;
+
+      <space|13em>}
 
       <space|12em>}}
 
@@ -3616,13 +3626,13 @@
 
       <space|9em>)
 
-      <space|12em>}}
-
-      <space|12em>{{
+      <space|13em>{
 
       <space|14em>10 : EX {} {} : C6 \|\| {} \|\| ;;\ 
 
       <space|14em>20 : EX {} {} : H4 \|\| {} \|\| ;;
+
+      <space|13em>}
 
       <space|12em>}}
 
@@ -3794,9 +3804,7 @@
 
       <space|11em>REPEAT BLOCK
 
-      <space|10em>}}
-
-      <space|10em>{{
+      <space|10em>
 
       <space|11em>DEPENDENT INSTRUCTION BLOCK
 
@@ -3866,15 +3874,17 @@
 
       <space|11em>REPEAT 2;
 
-      <space|10em>}}
+      <space|10em>
 
-      <space|10em>{{
+      <space|11em>{
 
-      <space|11em>11 : EX {} {} : NH : \|\| {} \|\|;;
+      <space|13em>11 : EX {} {} : NH : \|\| {} \|\|;;
 
-      <space|10em>&
+      <space|12em>&
 
-      <space|11em>12 : EX {} {} : OS : \|\| {} \|\|;;
+      <space|13em>12 : EX {} {} : OS : \|\| {} \|\|;;
+
+      <space|11em>}
 
       <space|10em>}}
 
@@ -3916,6 +3926,12 @@
   <with|color|blue|OS>, then we would have to assign them to two different
   Encore Matches. The result is a multidimensional array, which will be
   discussed later.
+
+  \;
+
+  Generally the dependent block needs to be enclosed a pair of braces
+  <with|color|blue|{}> even if there is a single insstruction. The repeat
+  instruction, if a single one, may be kept without braces.
 
   <subsection|Repeating Times>
 
@@ -3964,11 +3980,11 @@
 
       <space|11em>REPEAT 2+;
 
-      <space|10em>}}
+      <space|11em>{
 
-      <space|10em>{{
+      <space|12em>11 : EX {} {} : NH : \|\| {} \|\|;;
 
-      <space|11em>11 : EX {} {} : NH : \|\| {} \|\|;;
+      <space|11em>}
 
       <space|10em>}}
 
@@ -4595,9 +4611,9 @@
     <associate|auto-13|<tuple|1.2.2.3.1|8>>
     <associate|auto-14|<tuple|1.2.2.3.2|9>>
     <associate|auto-15|<tuple|1.2.2.3.3|9>>
-    <associate|auto-16|<tuple|1.2.2.3.4|9>>
+    <associate|auto-16|<tuple|1.2.2.3.4|10>>
     <associate|auto-17|<tuple|1.2.2.3.5|10>>
-    <associate|auto-18|<tuple|1.2.2.3.6|10>>
+    <associate|auto-18|<tuple|1.2.2.3.6|11>>
     <associate|auto-19|<tuple|1.2.3|11>>
     <associate|auto-2|<tuple|1.1|5>>
     <associate|auto-20|<tuple|1.2.3.0.1|11>>
@@ -4605,7 +4621,7 @@
     <associate|auto-22|<tuple|1.2.3.0.3|11>>
     <associate|auto-23|<tuple|1.2.3.0.4|11>>
     <associate|auto-24|<tuple|1.2.4|11>>
-    <associate|auto-25|<tuple|1.2.5|11>>
+    <associate|auto-25|<tuple|1.2.5|12>>
     <associate|auto-26|<tuple|2|13>>
     <associate|auto-27|<tuple|2.1|13>>
     <associate|auto-28|<tuple|2.1.1|13>>
